@@ -115,27 +115,40 @@
     const a=caseId==='a';
     if(kind==='diagnosis')return {title:'What caused the slowdown in the second run?',options:['Some links stopped carrying traffic','Hashing assigned flows unevenly','The receiver limits both paths'],answer:a?0:1,explanation:a?'Two links on path A went down, cutting its capacity from three packets per cycle to one. Two packets still arrive per cycle, and the excess builds up in the queue.':'The same six senders and links are in use. Five flows now share path A and one uses path B. Path A receives five packets per cycle but can forward only three, while path B has spare capacity.',hint:'Check whether the number of active links or the distribution of flows changed.'};
     if(kind==='evidence')return {title:'What evidence in the diagram supports your diagnosis?',options:['There are more senders than in the first run','Two links on path A went down','All links are up, but flows are split five to one'],answer:2,explanation:'Total capacity is still six packets per cycle. Five of the six flows share a path that can carry only three packets per cycle. The spare capacity on the other path goes unused with this assignment.',hint:'Count the senders, active links, and flows assigned to each path.'};
-    return {title:a?'What information helps choose suitable weights in Case A?':'What additional information helps the sender respond to congestion in Case B?',options:a?['Only the number of packets already delivered','The effective capacities of the paths','An assumption that every flow knows which path is free']:['Only the number of senders','Only that the capacities are equal','Congestion marks echoed by the receiver'],answer:a?1:2,explanation:a?'Knowing the capacities lets WCMP assign fewer new flows to the constrained path. The weights reflect the capacity ratio.':'Congestion feedback tells the sender its flow experienced congestion. The sender can try a new hash input and use later feedback to see whether it helped.',hint:'Think about what the topology tells you and what the flow experienced.'};
+    if(a)return {
+      title:'Why did WCMP address the slowdown in Case A?',
+      options:['It waited for the sender to receive congestion feedback','It used the remaining path capacities to steer more new flows toward the stronger path','It restored the links that went down'],
+      answer:1,
+      explanation:'WCMP used the 1:3 capacity ratio to assign one flow to path A and three to path B from the start. FlowBender can attempt to move flows after congestion feedback arrives.',
+      hint:'Compare what happened at the start of the WCMP run with what had to happen before FlowBender could rehash.',
+    };
+    return {title:'What additional information helps the sender respond to congestion in Case B?',options:['Only the number of senders','Only that the capacities are equal','Congestion marks echoed by the receiver'],answer:2,explanation:'Congestion feedback tells the sender its flow experienced congestion. The sender can try a new hash input and use later feedback to see whether it helped.',hint:'Think about what the topology tells you and what the flow experienced.'};
+  }
+  function needsWcmpTrial(){
+    return mode==='cases'&&caseId==='a'&&phase===4&&!results.a.wcmp;
   }
   function activeQuestion(){
     if(mode==='quiz')return {data:quizQuestions[quizIndex],state:quiz[quizIndex],key:'quiz'};
-    if(mode!=='cases')return null;
+    if(mode!=='cases'||needsWcmpTrial())return null;
     const kind=phase===2?(sub===1?'evidence':'diagnosis'):phase===4?'reflection':null;
     return kind?{data:caseQuestion(kind),state:records[caseId][kind],key:kind}:null;
   }
   function cleanAnswer(a){return {choice:Number.isInteger(a?.choice)&&a.choice>=0&&a.choice<3?a.choice:null,checked:!!a?.checked,correct:!!a?.correct};}
   function restore(saved){
     const s=saved?.modelContent,p=saved?.privateContent;
-    if(s?.pilot!=='routing-classroom-activity'||s.version!==4)return;
+    if(s?.pilot!=='routing-classroom-activity'||![4,5].includes(s.version))return;
     caseId=s.caseId==='b'?'b':'a';phase=Number.isInteger(s.phase)&&s.phase>=0&&s.phase<=4?s.phase:0;
     sub=s.sub===1&&caseId==='b'&&phase===2?1:0;
-    mode=['cases','quiz','complete'].includes(s.mode)?s.mode:'cases';
+    mode=['cases','quiz','note','complete'].includes(s.mode)?s.mode:'cases';
     policy=names[s.policy]?s.policy:'';confirmed=!!s.confirmed&&!!policy;
     speed=[.25,.5,.75,1,1.25,1.5,1.75,2].includes(s.speed)?s.speed:1;
     quizIndex=Number.isInteger(s.quizIndex)&&s.quizIndex>=0&&s.quizIndex<3?s.quizIndex:0;
     for(const c of ['a','b']){
       for(const method of Object.keys(names))if(Number.isInteger(s.results?.[c]?.[method])&&s.results[c][method]>0&&s.results[c][method]<1000)results[c][method]=s.results[c][method];
-      for(const k of ['diagnosis','evidence','reflection'])records[c][k]=cleanAnswer(p?.records?.[c]?.[k]);
+      for(const k of ['diagnosis','evidence','reflection']){
+        if(s.version===4&&c==='a'&&k==='reflection')continue;
+        records[c][k]=cleanAnswer(p?.records?.[c]?.[k]);
+      }
       records[c].seenHealthy=!!p?.records?.[c]?.seenHealthy;records[c].seenProblem=!!p?.records?.[c]?.seenProblem;
       records[c].lastPolicy=names[p?.records?.[c]?.lastPolicy]?p.records[c].lastPolicy:'';
     }
@@ -144,7 +157,7 @@
     prediction=[0,1,2].includes(p?.prediction)?p.prediction:null;
   }
   function save(){
-    const modelContent={pilot:'routing-classroom-activity',version:4,caseId,phase,sub,mode,policy,confirmed,speed,quizIndex,results};
+    const modelContent={pilot:'routing-classroom-activity',version:5,caseId,phase,sub,mode,policy,confirmed,speed,quizIndex,results};
     try {
       localStorage.setItem(stateKey,JSON.stringify({modelContent,privateContent:{records,quiz,note,trackedFlow,prediction}}));
     } catch { /* The current session can continue with browser storage disabled. */ }
@@ -156,9 +169,9 @@
     model.healthy=kind==='healthy';view=null;recorded=finished;
     if(finished)while(!model.done&&model.t<1000)model.tick();
   }
-  function enter(p){
-    pause();phase=p;sub=0;policy='';confirmed=false;prediction=null;mode='cases';
-    createRun(p===0?'healthy':'problem',p>=2);render();save();
+  function enter(p,trialPolicy=''){
+    phase=p;sub=0;policy=trialPolicy;confirmed=!!trialPolicy;prediction=null;mode='cases';
+    createRun(confirmed?'trial':p===0?'healthy':'problem',p>=2&&!confirmed);render();save();
   }
   function reconstruct(){
     if(mode!=='cases'||phase===4){policy=records[caseId].lastPolicy||policy||'ecmp';createRun('trial',true);}
@@ -249,8 +262,23 @@
   function resultExplanation(){
     const base=results[caseId].ecmp||model.t,delta=base-model.t;
     const effect=delta>0?`Saved ${delta} cycles.`:delta===0?'Completion time stayed the same.':`Took ${-delta} extra cycles.`;
-    const why=model.policy==='wcmp'?(caseId==='a'?'The 1:3 weights initially assigned one new flow to the lower-capacity path and three to the higher-capacity path.':'Equal capacities produce equal weights. With the same hash inputs, the flows again split five to one.'):model.policy==='fb'?'Senders received congestion feedback and tried new hash inputs during the transfer. The feedback takes time to arrive, and rehashing can select the same path again.':'Consistent hashing preserved the assignment. ECMP chooses a path from the packet headers without consulting congestion feedback.';
-    const suggestion=delta<=0?'Try another policy and see whether it improves the result.':caseId==='a'&&model.policy!=='wcmp'?'This policy helped. Try another one to see whether it finishes even sooner.':'This policy improved the result. You can compare another policy as well.';
+    let why;
+    if(model.policy==='wcmp'){
+      why=caseId==='a'
+        ? 'WCMP used the remaining capacities before the run began. The 1:3 weights assigned one new flow to path A and three to path B.'
+        : 'Equal capacities produce equal weights. With the same hash inputs, the flows again split five to one.';
+    }else if(model.policy==='fb'){
+      why='Senders received congestion feedback and tried new hash inputs during the transfer. The feedback takes time to arrive, and rehashing can select the same path again.';
+      if(caseId==='a')why='FlowBender started with two flows on each path. The queue on path A had already started to grow when congestion feedback triggered rehashing. Moving traffic helped, but path A’s capacity stayed at one packet per cycle.';
+    }else{
+      why='Consistent hashing preserved the assignment. ECMP chooses a path from the packet headers without consulting congestion feedback.';
+    }
+    if(caseId==='a'&&results.a.wcmp&&results.a.fb){
+      why+=` WCMP finished in ${results.a.wcmp} cycles and FlowBender in ${results.a.fb} cycles in this case.`;
+    }
+    const suggestion=needsWcmpTrial()
+      ? 'Try WCMP next. Compare how the two policies respond to a drop in capacity on one path.'
+      : delta<=0?'Try another policy and see whether it improves the result.':'You can compare another policy as well.';
     const original=getBaseline(caseId);
     const initialChanged=model.initialPaths.some((path,i)=>path!==original.initialPaths[i]);
     const observedText=initialChanged?'The assignment changed at the start of the trial.'
@@ -281,16 +309,21 @@
       if(i===phase)step.setAttribute('aria-current','step');
       else step.removeAttribute('aria-current');
     });
-    setText($('stage'),mode==='cases'?`Step ${phase+1} of 5`:mode==='quiz'?`Question ${quizIndex+1} of 3`:'Activity complete');
+    const stage=mode==='cases'?`Step ${phase+1} of 5`
+      :mode==='quiz'?`Question ${quizIndex+1} of 3`
+      :mode==='note'?'Prepare for class':'Activity complete';
+    setText($('stage'),stage);
     const progress=mode==='complete'?13:mode==='quiz'?10+quizIndex:(caseId==='a'?0:5)+phase;
     $('stage-progress').setAttribute('aria-valuenow',progress);$('stage-fill').style.width=`${progress/13*100}%`;
     $('run-title').textContent=mode==='cases'?(phase===0?'First run · Healthy network':phase<=2?'Second run · Changed conditions':'Trial · Same conditions and new flows'):'Most recent run · Review alongside the questions';
     $('active-method').textContent=names[model.policy];$('speed').value=String(speed);$('speed-label').textContent=speed+'×';
     $('clock').textContent=`Cycle ${model.t} · ${model.flows.reduce((s,f)=>s+f.received,0)}/${model.flows.length*48} packets delivered`;
-    $('class-note').hidden=mode!=='complete';
-    $('heading').textContent=mode==='cases'?(phase===3&&confirmed?'Predict and test the policy':headings[phase]):mode==='quiz'?'Check your understanding':'You finished both cases and the review';
+    $('class-note').hidden=mode!=='note';
+    $('heading').textContent=mode==='cases'?(phase===3&&confirmed?'Predict and test the policy':headings[phase])
+      :mode==='quiz'?'Check your understanding':mode==='note'?'One last question':'Activity complete';
     const explanation=phase===4?resultExplanation():null;
-    const instruction=mode==='complete'?'Review your results and choose one observation to explain in class.'
+    const instruction=mode==='complete'?'Thanks for completing the routing lab. See you in class!'
+      :mode==='note'?'Use one observation from the simulation to answer the question. You can finish even if you leave it blank.'
       :mode==='quiz'?'Choose an answer to see an explanation.'
       :phase===0?'In the healthy run, each path can forward three packets per cycle. Watch how many flows are assigned to each path.'
       :phase===1?'Run again and look for the cause of the slowdown. Compare each path’s capacity, its flow count, and the queue that builds up.'
@@ -332,10 +365,11 @@
     setText($('feedback'),feedback);
     $('feedback').hidden=!feedback;
     $('feedback').dataset.state=q?.state.checked&&!q.state.correct?'retry':'detail';
-    const allowed=mode==='complete'?false:mode==='quiz'?quiz[quizIndex].correct:phase===0?model.done:phase===1?model.done:phase===2?(sub===1?records[caseId].evidence.correct:records[caseId].diagnosis.correct):phase===4?records[caseId].reflection.correct:false;
+    const tryWcmp=needsWcmpTrial();
+    const allowed=mode==='complete'?false:mode==='note'||tryWcmp?true:mode==='quiz'?quiz[quizIndex].correct:phase===0?model.done:phase===1?model.done:phase===2?(sub===1?records[caseId].evidence.correct:records[caseId].diagnosis.correct):phase===4?records[caseId].reflection.correct:false;
     $('next').disabled=running||!allowed;
     $('next').hidden=!allowed;
-    $('next').textContent=mode==='quiz'?(quizIndex===2?'Finish and prepare for class':'Next question')
+    $('next').textContent=mode==='note'?'Finish':tryWcmp?'Test WCMP':mode==='quiz'?(quizIndex===2?'Continue to the class question':'Next question')
       :phase===0?'Go to the second run':phase===1?'Diagnose the slowdown':phase===2?(caseId==='b'&&sub===0?'Review the evidence':'Choose a policy')
       :caseId==='a'?'Go to Case B':'Go to the review questions';
     $('check').hidden=running||allowed||(!q&&!method);
@@ -344,7 +378,7 @@
     $('guide').textContent=model.t?'Resume run':phase===0?'Run the healthy network':phase===1?'Run with changed conditions':'Run the trial';
     $('another').hidden=!(forecast&&!running||mode==='cases'&&phase===4||mode==='complete');
     $('another').disabled=$('another').hidden;
-    $('another').textContent=mode==='complete'?'Restart the activity':forecast?'Choose another policy':'Try another policy';
+    $('another').textContent=mode==='complete'?'Do it again':forecast?'Choose another policy':'Try another policy';
     $('back').hidden=$('back').disabled;
     $('next-hint').hidden=mode==='complete'||allowed;
     setText($('next-hint'),running?'Continue to the next step when the run finishes.'
@@ -362,7 +396,7 @@
   function advance(){model.tick();finished();render();}
   function animate(now){
     if(!running)return;if(!lastTick)lastTick=now;
-    const duration=240/speed;
+    const duration=480/speed;
     if(now-lastTick>=duration){lastTick=now;lastPaint=now;advance();}
     else if(now-lastPaint>=33){lastPaint=now;draw(reduced()?0:(now-lastTick)/duration);}
     if(running)frame=requestAnimationFrame(animate);
@@ -378,9 +412,10 @@
   function resetActivity(){
     pause();caseId='a';phase=0;sub=0;mode='cases';policy='';confirmed=false;
     records={a:blankCase(),b:blankCase()};results={a:{},b:{}};
-    quiz=[blankAnswer(),blankAnswer(),blankAnswer()];quizIndex=0;trackedFlow=0;chartPath=0;prediction=null;
+    quiz=[blankAnswer(),blankAnswer(),blankAnswer()];quizIndex=0;trackedFlow=0;chartPath=0;prediction=null;note='';speed=1;
     createRun('healthy');render();save();
   }
+  $('reset-activity').addEventListener('click',resetActivity);
   $('restart').addEventListener('click',()=>{
     if($('restart').disabled)return;
     if(phase===0)createRun('healthy');
@@ -405,7 +440,11 @@
   });
   $('next').addEventListener('click',()=>{
     if($('next').disabled)return;
-    if(mode==='quiz'){if(quizIndex<2)quizIndex++;else mode='complete';render();save();$('heading').focus();return;}
+    if(mode==='quiz'){if(quizIndex<2)quizIndex++;else mode='note';render();save();$('heading').focus();return;}
+    if(mode==='note'){mode='complete';render();save();$('heading').focus();return;}
+    if(needsWcmpTrial()){
+      enter(3,'wcmp');$('heading').focus();return;
+    }
     if(phase===2&&caseId==='b'&&sub===0){sub=1;render();save();$('heading').focus();return;}
     if(phase<3)enter(phase+1);
     else if(phase===4&&caseId==='a'){caseId='b';enter(0);}
@@ -415,6 +454,7 @@
   $('back').addEventListener('click',()=>{
     if($('back').disabled)return;
     if(mode==='quiz'){if(quizIndex>0)quizIndex--;else mode='cases';render();save();}
+    else if(mode==='note'){mode='quiz';render();save();}
     else if(phase===2&&sub===1){sub=0;render();save();}
     else {
       const previous=phase-1;

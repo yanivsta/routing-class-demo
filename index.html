@@ -22,6 +22,7 @@
   <nav class="activity-tabs" aria-label="Activity sections">
     <button id="reading-tab" type="button" aria-controls="reading" aria-expanded="false">Pre-reading</button>
     <button id="simulation-tab" type="button" aria-controls="simulation-panel" aria-expanded="false">Simulation and Questions</button>
+    <button id="rp-reset-activity" class="reset-activity" type="button">Restart activity</button>
   </nav>
 
   <section class="reading-guide" id="reading" aria-labelledby="reading-tab" hidden>
@@ -79,6 +80,11 @@
   </section>
 
   <section id="simulation-panel" aria-labelledby="simulation-tab" hidden>
+  <section class="simulation-intro" aria-labelledby="simulation-intro-title">
+    <h2 id="simulation-intro-title" tabindex="-1">How to use the simulation</h2>
+    <p>The numbered hosts on the left send packets to one receiver on the right. Packets travel along two paths, A and B. Color and number identify each flow. The diagram shows each path’s capacity and the packets waiting in its queue.</p>
+    <p>In each case, run the healthy network first, then see what changes. Use the diagram to diagnose the slowdown. Predict what a routing policy will do, test it, and compare how many cycles it takes for the last packet to arrive. Answer the review questions and bring one observation to class.</p>
+  </section>
   <nav class="journey" id="start-simulation" tabindex="-1" aria-label="Activity progress">
     <ol class="journey-cases">
       <li id="rp-case-a"><span class="journey-number">A</span><span>Case A</span></li>

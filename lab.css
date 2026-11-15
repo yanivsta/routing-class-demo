@@ -37,10 +37,14 @@ p { line-height: 1.55; }
 h1 { font-size: clamp(2.45rem, 5.5vw, 4.25rem); line-height: 1.03; letter-spacing: -.04em; margin-block: .28rem .65rem; }
 .intro { font-weight: 700; font-size: clamp(1.05rem, 2vw, 1.28rem); }
 .intro-secondary { font-size: .98rem; font-weight: 400; color: var(--muted-ink); }
-.activity-tabs { display: flex; gap: .4rem; margin-block-end: 1rem; }
+.activity-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-block-end: 1rem; padding-block: .4rem; position: sticky; top: 0; z-index: 2; background: #f3f6f2; }
 .activity-tabs button { display: grid; place-items: center; min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--muted-ink); font-weight: 700; }
 .activity-tabs button[aria-expanded="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
 .activity-tabs button:hover:not([aria-expanded="true"]) { background: var(--soft); color: var(--accent-dark); }
+.activity-tabs .reset-activity { margin-inline-start: auto; }
+.simulation-intro { padding: 1rem; margin-block-end: 1rem; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+.simulation-intro h2 { font-size: 1.15rem; }
+.simulation-intro p { margin-block-start: .45rem; color: var(--muted-ink); max-width: 82ch; }
 .reading-guide > .button { display: inline-flex; align-items: center; text-decoration: none; }
 .reading-guide { display: grid; gap: .85rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); padding: clamp(1rem, 2vw, 1.6rem); margin-block-end: 1rem; }
 .reading-guide > p, .reading-excerpts p { color: var(--muted-ink); }
@@ -55,7 +59,7 @@ h1 { font-size: clamp(2.45rem, 5.5vw, 4.25rem); line-height: 1.03; letter-spacin
 .ecn-note { background: var(--soft); border-radius: 9px; padding: .7rem .8rem; margin-block-start: 1rem; }
 .ecn-note p { margin-block-start: .45rem; }
 .reading-guide > .button { justify-self: start; }
-#reading, #start-simulation { scroll-margin-block-start: 1rem; }
+#reading, #start-simulation, #rp-heading { scroll-margin-block-start: 6rem; }
 .journey { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; align-items: center; padding: .7rem .95rem; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); margin-block-end: 1rem; }
 .journey-cases { list-style: none; padding: 0; grid-column: 1/-1; display: grid; grid-template-columns: repeat(3, 1fr); gap: .45rem; margin-block-end: .6rem; }
 .journey-cases li { display: flex; align-items: center; gap: .5rem; min-height: 36px; color: var(--muted-ink); padding-inline: .34rem; font-size: .91rem; }
@@ -145,7 +149,7 @@ textarea { width: 100%; resize: vertical; }
 .flow-details, .page-footer { font-size: .9rem; color: var(--muted-ink); }
 .page-footer { margin-block-start: 1rem; padding: .55rem .3rem; }
 .page-footer p { margin-block-start: .45rem; max-width: 70ch; }
-@media (min-width: 900px) { .task { position: sticky; top: .75rem; } }
+@media (min-width: 900px) { .task { position: sticky; top: 4.15rem; } }
 @media (max-width: 899px) {
   .workspace { grid-template-columns: 1fr; }
   .page { width: min(100% - 1.2rem, 690px); padding-block-start: 1.1rem; }

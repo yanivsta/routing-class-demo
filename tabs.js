@@ -1,5 +1,5 @@
 (() => {
-  const sections = [...document.querySelectorAll('.activity-tabs button')];
+  const sections = [...document.querySelectorAll('.activity-tabs button[aria-controls]')];
   const panels = sections.map(button => document.getElementById(button.getAttribute('aria-controls')));
   let active = -1;
 
@@ -36,6 +36,12 @@
 
   document.querySelector('.reading-guide > a[href="#start-simulation"]').addEventListener('click', event => {
     event.preventDefault();
+    clearFragment();
+    showSection(1);
+    document.getElementById('simulation-intro-title').focus();
+  });
+
+  document.getElementById('rp-reset-activity').addEventListener('click', () => {
     clearFragment();
     showSection(1);
     document.getElementById('start-simulation').focus();
