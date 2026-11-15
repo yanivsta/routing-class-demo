@@ -1,14 +1,14 @@
 (() => {
   const sections = [...document.querySelectorAll('.activity-tabs button[aria-controls]')];
-  const panels = sections.map(button => document.getElementById(button.getAttribute('aria-controls')));
-  let active = -1;
+  let active = '';
 
-  function showSection(index) {
-    if (active === 1 && index !== 1) document.getElementById('rp-pause').click();
-    active = index;
-    sections.forEach((button, i) => {
-      button.setAttribute('aria-expanded', String(i === active));
-      panels[i].hidden = i !== active;
+  function showSection(id) {
+    if (active === 'simulation-panel' && id !== active) document.getElementById('rp-pause').click();
+    active = id;
+    sections.forEach(button => {
+      const panelId = button.getAttribute('aria-controls');
+      button.setAttribute('aria-expanded', String(panelId === active));
+      document.getElementById(panelId).hidden = panelId !== active;
     });
   }
 
@@ -22,28 +22,33 @@
   }
 
   function syncFromHash() {
-    if (location.hash === '#reading') showSection(0);
-    else if (['#start-simulation', '#simulation-panel', '#rp-heading'].includes(location.hash)) showSection(1);
-    else showSection(-1);
+    if (location.hash === '#reading') showSection('reading');
+    else if (location.hash === '#wcmp-exercise') showSection('wcmp-exercise');
+    else if (['#start-simulation', '#simulation-panel', '#rp-heading'].includes(location.hash)) showSection('simulation-panel');
+    else showSection('');
   }
 
-  sections.forEach((button, index) => {
+  sections.forEach(button => {
     button.addEventListener('click', () => {
       clearFragment();
-      showSection(active === index ? -1 : index);
+      const id = button.getAttribute('aria-controls');
+      showSection(active === id ? '' : id);
     });
   });
 
-  document.querySelector('.reading-guide > a[href="#start-simulation"]').addEventListener('click', event => {
-    event.preventDefault();
-    clearFragment();
-    showSection(1);
-    document.getElementById('simulation-intro-title').focus();
+  document.querySelectorAll('a[data-open-section]').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      clearFragment();
+      const id = link.dataset.openSection;
+      showSection(id);
+      document.getElementById(id === 'wcmp-exercise' ? 'exercise-title' : 'simulation-intro-title').focus();
+    });
   });
 
   document.getElementById('rp-reset-activity').addEventListener('click', () => {
     clearFragment();
-    showSection(1);
+    showSection('simulation-panel');
     document.getElementById('start-simulation').focus();
   });
 

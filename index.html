@@ -6,6 +6,7 @@
   <meta name="description" content="A routing lab comparing ECMP, WCMP, and FlowBender across two network scenarios.">
   <title>Routing Lab | Class Preparation</title>
   <link rel="stylesheet" href="lab.css">
+  <link rel="stylesheet" href="exercise.css">
   <script defer src="lab.js"></script>
 </head>
 <body>
@@ -21,6 +22,7 @@
 
   <nav class="activity-tabs" aria-label="Activity sections">
     <button id="reading-tab" type="button" aria-controls="reading" aria-expanded="false">Pre-reading</button>
+    <button id="exercise-tab" type="button" aria-controls="wcmp-exercise" aria-expanded="false">WCMP Exercise</button>
     <button id="simulation-tab" type="button" aria-controls="simulation-panel" aria-expanded="false">Simulation and Questions</button>
     <button id="rp-reset-activity" class="reset-activity" type="button">Restart activity</button>
   </nav>
@@ -76,7 +78,94 @@
         </details></div>
       </details>
     </div>
-    <a class="button primary" href="#start-simulation">Start the simulation</a>
+    <a class="button primary" href="#wcmp-exercise" data-open-section="wcmp-exercise">Start the WCMP exercise</a>
+  </section>
+
+  <section id="wcmp-exercise" class="wcmp-exercise" aria-labelledby="exercise-tab" hidden>
+    <header>
+      <p class="eyebrow">WCMP · Figure 2(a) · About 10 min</p>
+      <h2 id="exercise-title" tabindex="-1">Follow the 12 flows</h2>
+      <p>Twelve flows travel from the source switch to the same destination. Every link shown has a capacity of 10 Gb/s. At the start, ECMP assigns three flows to each of the source switch’s four uplinks.</p>
+    </header>
+    <div class="exercise-layout">
+      <figure class="exercise-figure">
+        <svg class="exercise-diagram" viewBox="0 0 516 208" role="img" aria-labelledby="exercise-diagram-title exercise-diagram-desc">
+          <title id="exercise-diagram-title">Four uplinks and three links into the destination</title>
+          <desc id="exercise-diagram-desc">Uplinks A and B meet at S2₀. Uplink C reaches S2₁. Uplink D reaches S2₂. Each upper-stage switch has one link carrying traffic to the destination.</desc>
+          <text x="20" y="16" class="diagram-caption">Source</text>
+          <text x="258" y="16" text-anchor="middle" class="diagram-caption">Upper stage</text>
+          <text x="496" y="16" text-anchor="end" class="diagram-caption">Destination</text>
+          <g fill="none" class="exercise-links">
+            <path class="route-zero" d="M98 87 H123 L151 37 H220"/>
+            <path class="route-zero" d="M98 95 H145 L173 60 H220"/>
+            <path class="route-one" d="M98 108 H220"/>
+            <path class="route-two" d="M98 121 H137 L181 168 H220"/>
+            <path class="route-zero" id="exercise-shared-link" d="M296 48 H344 L386 88 H418"/>
+            <path class="route-one" d="M296 108 H418"/>
+            <path class="route-two" d="M296 168 H354 L391 125 H418"/>
+          </g>
+          <g class="exercise-switches">
+            <rect x="20" y="67" width="78" height="77" rx="8"/>
+            <rect x="220" y="29" width="76" height="38" rx="8"/>
+            <rect x="220" y="89" width="76" height="38" rx="8"/>
+            <rect x="220" y="149" width="76" height="38" rx="8"/>
+            <rect x="418" y="67" width="78" height="77" rx="8"/>
+            <text x="59" y="109">S1₀</text>
+            <text x="258" y="52">S2₀</text>
+            <text x="258" y="112">S2₁</text>
+            <text x="258" y="172">S2₂</text>
+            <text x="457" y="109">S1₂</text>
+          </g>
+          <g class="exercise-link-labels">
+            <text id="exercise-link-a" x="185" y="30">A · 3</text>
+            <text id="exercise-link-b" x="196" y="77">B · 3</text>
+            <text id="exercise-link-c" x="181" y="100">C · 3</text>
+            <text id="exercise-link-d" x="196" y="159">D · 3</text>
+            <text id="exercise-downlink-0" x="332" y="39">6 flows</text>
+            <text id="exercise-downlink-1" x="351" y="100">3 flows</text>
+            <text id="exercise-downlink-2" x="328" y="159">3 flows</text>
+          </g>
+        </svg>
+        <figcaption>Links used by these flows from <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=2" target="_blank" rel="noopener">WCMP Figure 2(a)</a>. The numbers next to links show flow counts.</figcaption>
+        <dl class="exercise-metrics" aria-label="Current allocation">
+          <div><dt>Flows assigned</dt><dd>12 / 12</dd></div>
+          <div><dt>Slowest flow</dt><dd id="exercise-rate">1.67 Gb/s</dd></div>
+        </dl>
+      </figure>
+      <section class="exercise-task" id="exercise-diagnosis" aria-labelledby="exercise-question">
+        <p class="eyebrow">Step 1 of 2</p>
+        <h3 id="exercise-question">Why do some flows get less bandwidth?</h3>
+        <form id="exercise-answer">
+          <fieldset>
+            <legend class="sr-only">Choose the explanation that fits the diagram</legend>
+            <label><input type="radio" name="cause" value="split" required> The flows are unevenly split across the four source uplinks.</label>
+            <label><input type="radio" name="cause" value="capacity"> Some physical links have less than 10 Gb/s of capacity.</label>
+            <label><input type="radio" name="cause" value="shared"> Flows from two uplinks share one link farther downstream.</label>
+          </fieldset>
+          <button class="button primary" type="submit">Check answer</button>
+        </form>
+        <p class="exercise-feedback" id="exercise-feedback" role="status" hidden></p>
+        <button class="button primary" id="exercise-continue" type="button" hidden>Redistribute the flows</button>
+      </section>
+      <section class="exercise-task" id="exercise-allocation" aria-labelledby="exercise-allocation-title" hidden>
+        <p class="eyebrow">Step 2 of 2</p>
+        <h3 id="exercise-allocation-title" tabindex="-1">Help the slowest flow</h3>
+        <p>Move one flow at a time. Select an uplink to take a flow from, then select an uplink to receive it. Watch how the loads into the destination and the slowest flow’s rate change.</p>
+        <div class="exercise-uplinks" aria-label="Choose an uplink">
+          <button type="button" data-uplink="0"><span>Uplink A</span><strong>3</strong><span>to S2₀</span></button>
+          <button type="button" data-uplink="1"><span>Uplink B</span><strong>3</strong><span>to S2₀</span></button>
+          <button type="button" data-uplink="2"><span>Uplink C</span><strong>3</strong><span>to S2₁</span></button>
+          <button type="button" data-uplink="3"><span>Uplink D</span><strong>3</strong><span>to S2₂</span></button>
+        </div>
+        <p id="exercise-move-status" class="fine" aria-live="polite"></p>
+        <button class="button subtle" id="exercise-reset" type="button">Reset allocation</button>
+        <div class="exercise-feedback success" id="exercise-success" role="status" hidden>
+          <strong>Each destination link now carries four flows.</strong>
+          <p>Each flow gets 2.5 Gb/s in this model. Uplinks A and B share one downstream link, so their total matters. The paper illustrates WCMP’s 1:1:2:2 hashing weights with a split of 2, 2, 4, 4.</p>
+        </div>
+        <a class="button primary exercise-next" id="exercise-start-simulation" href="#start-simulation" data-open-section="simulation-panel" hidden>Continue to the simulation</a>
+      </section>
+    </div>
   </section>
 
   <section id="simulation-panel" aria-labelledby="simulation-tab" hidden>
@@ -182,5 +271,6 @@
   </section>
 </main>
 <script src="tabs.js"></script>
+<script src="exercise.js"></script>
 </body>
 </html>
