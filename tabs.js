@@ -24,7 +24,7 @@
   function syncFromHash() {
     if (location.hash === '#reading') showSection('reading');
     else if (location.hash === '#wcmp-exercise') showSection('wcmp-exercise');
-    else if (['#start-simulation', '#simulation-panel', '#rp-heading'].includes(location.hash)) showSection('simulation-panel');
+    else if (['#start-simulation', '#simulation-panel', '#rp-heading', '#rp-results'].includes(location.hash)) showSection('simulation-panel');
     else showSection('');
   }
 

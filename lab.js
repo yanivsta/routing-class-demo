@@ -342,7 +342,7 @@
       :phase===0?'In the healthy run, each path can forward three packets per cycle. Watch how many flows are assigned to each path.'
       :phase===1?'Run again and look for the cause of the slowdown. Compare each path’s capacity, its flow count, and the queue that builds up.'
       :phase===2?'Choose the explanation that fits what you observed.'
-      :phase===3?(confirmed?'Make a prediction, then run the trial.':'Pick a routing policy to test with the same flows and network conditions.')
+      :phase===3?(confirmed?'Make a prediction, then run the trial.':'Choose how you would address the slowdown. Each policy is tested with the same flows and network conditions.')
       :explanation.headline;
     setText($('context'),instruction);
     const event=mode==='cases'&&phase===4?explanation.suggestion
@@ -350,12 +350,16 @@
       :model.observation?(model.done?`The run finished in ${model.t} cycles. The diagram now shows the peak queue on each path.`:''):model.event;
     setText($('event'),event);
     $('event').hidden=!event;
-    $('return').hidden=mode!=='cases'||!model.done||phase===3;
+    const comparing=!$('comparison').hidden;
+    $('return').hidden=mode!=='cases'||!model.done||phase>=3;
+    $('view-results').hidden=!comparing;
+    $('results').hidden=mode==='cases'&&!comparing;
+    $('back-to-question').hidden=!comparing;
     if($('flow-details').open)$('flow-progress').innerHTML=model.flows.map(f=>`<div class="rp-flow"><span>${f.id+1} → ${f.path?'B':'A'}</span><div class="rp-track" role="progressbar" aria-label="Packets delivered for flow ${f.id+1}" aria-valuemin="0" aria-valuemax="48" aria-valuenow="${f.received}"><span style="width:${100*f.received/48}%;background:${colors[f.id]}"></span></div><span class="tabular-nums">${f.received}/48</span></div>${f.finish!==null?`<div class="text-small">Flow ${f.id+1} finished in ${f.finish} cycles</div>`:''}`).join('');
-    $('scores').innerHTML=mode==='cases'?(phase===4?scoreTable(caseId)+'<div class="text-small">'+explanation.why+'</div>':'<div class="text-small">Compare runs by the number of cycles until all packets arrive. Expand the details to see individual flow completion times.</div>'):'<div>Case A</div>'+scoreTable('a')+'<div>Case B</div>'+scoreTable('b');
+    $('scores').innerHTML=mode==='cases'?(comparing?scoreTable(caseId)+'<div class="text-small">'+explanation.why+'</div>':''):'<div>Case A</div>'+scoreTable('a')+'<div>Case B</div>'+scoreTable('b');
     const q=activeQuestion(),trialSetup=mode==='cases'&&phase===3;
     const method=trialSetup&&!confirmed,forecast=trialSetup&&confirmed;
-    $('question-title').textContent=q?q.data.title:method?'Which routing policy would you like to test?':forecast?'When, if at all, will flow assignments differ from the baseline?':'';
+    $('question-title').textContent=q?q.data.title:method?'Which routing policy do you expect to deliver all packets in the fewest cycles?':forecast?'When, if at all, will flow assignments differ from the baseline?':'';
     const visible=!!q||trialSetup;
     $('answers').hidden=!visible;$('answers').setAttribute('aria-hidden',String(!visible));
     for(let i=0;i<3;i++){
