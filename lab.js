@@ -122,14 +122,22 @@
       explanation:'WCMP used the 1:3 capacity ratio to assign one flow to path A and three to path B from the start. FlowBender can attempt to move flows after congestion feedback arrives.',
       hint:'Compare what happened at the start of the WCMP run with what had to happen before FlowBender could rehash.',
     };
-    return {title:'What additional information helps the sender respond to congestion in Case B?',options:['Only the number of senders','Only that the capacities are equal','Congestion marks echoed by the receiver'],answer:2,explanation:'Congestion feedback tells the sender its flow experienced congestion. The sender can try a new hash input and use later feedback to see whether it helped.',hint:'Think about what the topology tells you and what the flow experienced.'};
+    return {
+      title:'Why did FlowBender address the slowdown in Case B?',
+      options:['It reduced the capacity of the busiest path','It assigned larger weights to a path with more capacity','Congestion feedback let senders try a new path during the run'],
+      answer:2,
+      explanation:'Both paths had the same capacity, so ECMP and WCMP made the same initial assignments. FlowBender used congestion feedback to rehash ongoing flows, moving some traffic away from the overloaded path.',
+      hint:'Compare what the policies know about path capacity with what senders learn from congestion feedback.',
+    };
   }
-  function needsWcmpTrial(){
-    return mode==='cases'&&caseId==='a'&&phase===4&&!results.a.wcmp;
+  function requiredTrialPolicy(){
+    if(mode!=='cases'||phase!==4)return '';
+    const preferredPolicy=caseId==='a'?'wcmp':'fb';
+    return results[caseId][preferredPolicy]?'':preferredPolicy;
   }
   function activeQuestion(){
     if(mode==='quiz')return {data:quizQuestions[quizIndex],state:quiz[quizIndex],key:'quiz'};
-    if(mode!=='cases'||needsWcmpTrial())return null;
+    if(mode!=='cases'||requiredTrialPolicy())return null;
     const kind=phase===2?(sub===1?'evidence':'diagnosis'):phase===4?'reflection':null;
     return kind?{data:caseQuestion(kind),state:records[caseId][kind],key:kind}:null;
   }
@@ -182,7 +190,7 @@
     render();
   }
   function scoreTable(c){
-    const rows=Object.entries(results[c]);
+    const rows=Object.keys(names).filter(policy=>results[c][policy]).map(policy=>[policy,results[c][policy]]);
     return rows.length?'<table class="table table-sm"><thead><tr><th>Policy</th><th>Time until all flows finish</th></tr></thead><tbody>'+rows.map(([p,t])=>`<tr><td><div dir="ltr">${names[p]}</div>${p==='ecmp'?'<span class="text-small">Slow baseline run</span>':''}</td><td class="tabular-nums">${t} cycles</td></tr>`).join('')+'</tbody></table>':'';
   }
   const baselineRuns={};
@@ -276,8 +284,14 @@
     if(caseId==='a'&&results.a.wcmp&&results.a.fb){
       why+=` WCMP finished in ${results.a.wcmp} cycles and FlowBender in ${results.a.fb} cycles in this case.`;
     }
-    const suggestion=needsWcmpTrial()
+    if(caseId==='b'&&results.b.wcmp&&results.b.fb){
+      why+=` ECMP and WCMP assigned flows the same way and finished in ${results.b.ecmp} and ${results.b.wcmp} cycles, respectively. FlowBender finished in ${results.b.fb} cycles after senders tried to move flows away from congestion.`;
+    }
+    const trialPolicy=requiredTrialPolicy();
+    const suggestion=trialPolicy==='wcmp'
       ? 'Try WCMP next. Compare how the two policies respond to a drop in capacity on one path.'
+      : trialPolicy==='fb'
+        ? 'Try FlowBender next. Both paths have the same capacity. Watch what changes when senders respond to congestion during the run.'
       : delta<=0?'Try another policy and see whether it improves the result.':'You can compare another policy as well.';
     const original=getBaseline(caseId);
     const initialChanged=model.initialPaths.some((path,i)=>path!==original.initialPaths[i]);
@@ -365,11 +379,11 @@
     setText($('feedback'),feedback);
     $('feedback').hidden=!feedback;
     $('feedback').dataset.state=q?.state.checked&&!q.state.correct?'retry':'detail';
-    const tryWcmp=needsWcmpTrial();
-    const allowed=mode==='complete'?false:mode==='note'||tryWcmp?true:mode==='quiz'?quiz[quizIndex].correct:phase===0?model.done:phase===1?model.done:phase===2?(sub===1?records[caseId].evidence.correct:records[caseId].diagnosis.correct):phase===4?records[caseId].reflection.correct:false;
+    const trialPolicy=requiredTrialPolicy();
+    const allowed=mode==='complete'?false:mode==='note'||trialPolicy?true:mode==='quiz'?quiz[quizIndex].correct:phase===0?model.done:phase===1?model.done:phase===2?(sub===1?records[caseId].evidence.correct:records[caseId].diagnosis.correct):phase===4?records[caseId].reflection.correct:false;
     $('next').disabled=running||!allowed;
     $('next').hidden=!allowed;
-    $('next').textContent=mode==='note'?'Finish':tryWcmp?'Test WCMP':mode==='quiz'?(quizIndex===2?'Continue to the class question':'Next question')
+    $('next').textContent=mode==='note'?'Finish':trialPolicy?`Test ${names[trialPolicy]}`:mode==='quiz'?(quizIndex===2?'Continue to the class question':'Next question')
       :phase===0?'Go to the second run':phase===1?'Diagnose the slowdown':phase===2?(caseId==='b'&&sub===0?'Review the evidence':'Choose a policy')
       :caseId==='a'?'Go to Case B':'Go to the review questions';
     $('check').hidden=running||allowed||(!q&&!method);
@@ -442,8 +456,9 @@
     if($('next').disabled)return;
     if(mode==='quiz'){if(quizIndex<2)quizIndex++;else mode='note';render();save();$('heading').focus();return;}
     if(mode==='note'){mode='complete';render();save();$('heading').focus();return;}
-    if(needsWcmpTrial()){
-      enter(3,'wcmp');$('heading').focus();return;
+    const trialPolicy=requiredTrialPolicy();
+    if(trialPolicy){
+      enter(3,trialPolicy);$('heading').focus();return;
     }
     if(phase===2&&caseId==='b'&&sub===0){sub=1;render();save();$('heading').focus();return;}
     if(phase<3)enter(phase+1);
