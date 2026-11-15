@@ -164,8 +164,16 @@
       </section>
       <section class="exercise-task" id="exercise-allocation" aria-labelledby="exercise-allocation-title" hidden>
         <p class="eyebrow">Step 2 of 2</p>
-        <h3 id="exercise-allocation-title" tabindex="-1">Help the slowest flow</h3>
-        <p>Drag all 12 flows from the bank to the uplink arrows or the cards below. You can also select a flow and then select a card. Watch the arrows change as you move flows.</p>
+        <h3 id="exercise-allocation-title" tabindex="-1">Maximize the slowest flow’s rate</h3>
+        <p class="exercise-goal">Assign all 12 flows. Find a split that gives the slowest flow as much bandwidth as possible.</p>
+        <div class="exercise-feedback success exercise-complete" id="exercise-success" hidden>
+          <div role="status">
+            <h4>Success! Every flow gets 2.5 Gb/s.</h4>
+            <p>Each link into the destination carries four flows. Uplinks A and B share one downstream link, so their total matters. The paper illustrates WCMP’s 1:1:2:2 hashing weights with a split of 2, 2, 4, 4.</p>
+          </div>
+          <a class="button primary exercise-next" href="#start-simulation" data-open-section="simulation-panel">Continue to the simulation</a>
+        </div>
+        <p>Drag flows from the bank onto an uplink arrow or card. You can also select a flow and then select a card. The arrows show how many flows each link carries.</p>
         <div class="exercise-drop-zone exercise-bank" data-drop-zone="bank">
           <button class="exercise-drop-label" type="button" data-place="bank">Flow bank <strong data-count>12</strong></button>
           <div class="exercise-tokens" data-tokens></div>
@@ -178,11 +186,6 @@
         </div>
         <p id="exercise-move-status" class="fine" aria-live="polite"></p>
         <button class="button subtle" id="exercise-reset" type="button">Return all flows to the bank</button>
-        <div class="exercise-feedback success" id="exercise-success" role="status" hidden>
-          <strong>Each destination link now carries four flows.</strong>
-          <p>Each flow gets 2.5 Gb/s in this model. Uplinks A and B share one downstream link, so their total matters. The paper illustrates WCMP’s 1:1:2:2 hashing weights with a split of 2, 2, 4, 4.</p>
-        </div>
-        <a class="button primary exercise-next" id="exercise-start-simulation" href="#start-simulation" data-open-section="simulation-panel" hidden>Continue to the simulation</a>
       </section>
     </div>
   </section>

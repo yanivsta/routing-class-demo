@@ -41,8 +41,10 @@
     find('rate').textContent = assigned === 12 ? `${(10 / Math.max(...loads)).toFixed(2)} Gb/s` : 'Assign all 12 flows';
     find('diagram-desc').textContent = `${assigned} of 12 flows assigned. Uplink counts: ${counts.join(', ')}. Destination link counts: ${loads.join(', ')}.`;
     const solved = allocating && loads.every(count => count === 4);
-    find('success').hidden = !solved;
-    find('start-simulation').hidden = !solved;
+    const success = find('success');
+    const justSolved = solved && success.hidden;
+    success.hidden = !solved;
+    if (justSolved) success.scrollIntoView({ block: 'nearest' });
   }
 
   function updateAllocation() {
