@@ -17,21 +17,60 @@
       <p class="intro">שתי עבודות מסתיימות לאט. מה השתנה ברשת, ואיך כדאי להגיב?</p>
       <p class="intro intro-secondary">צפו בהרצה, בחרו הסבר, ונסו שיטת ניתוב. בסוף השוו כמה זמן לקח לזרימה האחרונה לסיים.</p>
     </div>
-    <details class="reading">
-      <summary>מושגים ומאמרים</summary>
-      <dl>
-        <dt><bdi>ECMP</bdi></dt><dd>גיבוב משבץ כל זרימה למסלול מבין האפשרויות השוות.</dd>
-        <dt><bdi>WCMP</bdi></dt><dd>הגיבוב נותן יותר סיכוי למסלול בעל משקל גבוה יותר.</dd>
-        <dt><bdi>FlowBender</bdi></dt><dd>השולח מנסה גיבוב חדש כשמשוב הגודש חוצה סף.</dd>
-      </dl>
-      <div class="reading-links">
-        <a href="https://www.sysnet.ucsd.edu/sysnet/miscpapers/wcmp-eurosys-final.pdf" target="_blank" rel="noopener"><bdi>WCMP</bdi> · סעיף 3.1 ואיור 3</a>
-        <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf" target="_blank" rel="noopener"><bdi>FlowBender</bdi> · סעיפים 3.3.1–3.3.2</a>
-      </div>
-    </details>
+    <div class="prep-links" lang="en" dir="ltr">
+      <a class="button primary" href="#reading">Read the excerpts</a>
+      <a class="button subtle" href="#start-simulation">Start the simulation</a>
+    </div>
   </header>
 
-  <nav class="journey" aria-label="התקדמות בפעילות">
+  <section class="reading-guide" id="reading" lang="en" dir="ltr" aria-labelledby="reading-title">
+    <h2 id="reading-title">Read before you run</h2>
+    <p>Read the short excerpts in order. PDF page numbers start at the first page of the file. Count lines from the start of the specified paragraph.</p>
+    <div class="reading-papers">
+      <article class="reading-paper">
+        <h3>WCMP</h3>
+        <ol class="reading-excerpts">
+          <li>
+            <strong>The problem</strong>
+            <p>PDF page 1, Abstract. Read both paragraphs in full: lines 1–12 of paragraph 1 and lines 1–11 of paragraph 2.</p>
+            <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=1" target="_blank" rel="noopener">Open WCMP, PDF page 1</a>
+          </li>
+          <li>
+            <strong>The proposed solution</strong>
+            <p>PDF page 4, Section 3.1, paragraph 2, lines 1–7. Start at “To implement weighted hashing” and stop after “associated with that egress port.”</p>
+            <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">Open WCMP, PDF page 4</a>
+          </li>
+        </ol>
+      </article>
+      <article class="reading-paper">
+        <h3>FlowBender</h3>
+        <ol class="reading-excerpts">
+          <li>
+            <strong>The problem</strong>
+            <p>PDF page 1, Abstract, paragraph 1, lines 1–8. Start at “Datacenter networks provide” and stop after “degrading performance of other flows as well.”</p>
+            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=1" target="_blank" rel="noopener">Open FlowBender, PDF page 1</a>
+          </li>
+          <li>
+            <strong>Two ways to compare approaches</strong>
+            <p>PDF page 2, Introduction, paragraph 3 (the first on this page), lines 1–5. Start at “The solution space for load balancing” and stop after “in a given flow.”</p>
+            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a>
+          </li>
+          <li>
+            <strong>The proposed solution</strong>
+            <p>PDF page 2, Introduction, paragraph 4 (the second on this page), lines 1–11. Start at “We propose FlowBender” and stop after “selectively re-routed.”</p>
+            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a>
+          </li>
+        </ol>
+        <aside class="ecn-note">
+          <h4>How FlowBender uses ECN</h4>
+          <p>A congested switch can mark a packet using Explicit Congestion Notification (ECN). The receiver echoes the congestion signal in its acknowledgment, so the sender learns that the packet encountered congestion along the path. If the fraction of acknowledgments reporting congestion exceeds a threshold, the sender changes a packet header value that the switches use for hashing. Subsequent packets in the same flow may then take a different path.</p>
+        </aside>
+      </article>
+    </div>
+    <a class="button primary" href="#start-simulation">Start the simulation</a>
+  </section>
+
+  <nav class="journey" id="start-simulation" tabindex="-1" aria-label="התקדמות בפעילות">
     <ol class="journey-cases">
       <li id="rp-case-a"><span class="journey-number">א</span><span>מקרה ראשון</span></li>
       <li id="rp-case-b"><span class="journey-number">ב</span><span>מקרה שני</span></li>

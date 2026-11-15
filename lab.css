@@ -37,11 +37,20 @@ p { line-height: 1.55; }
 h1 { font-size: clamp(2.45rem, 5.5vw, 4.25rem); line-height: 1.03; letter-spacing: -.04em; margin-block: .28rem .65rem; }
 .intro { font-weight: 700; font-size: clamp(1.05rem, 2vw, 1.28rem); }
 .intro-secondary { font-size: .98rem; font-weight: 400; color: var(--muted-ink); }
-.reading { border: 1px solid var(--line); background: var(--paper); border-radius: 12px; min-width: 9.5rem; max-width: 19rem; padding: .8rem 1rem; }
-.reading dl { margin-block: .8rem; }
-.reading dt { font-weight: 700; }
-.reading dd { color: var(--muted-ink); line-height: 1.45; margin-block: .1rem .5rem; }
-.reading-links { display: grid; gap: .45rem; font-size: .9rem; }
+.prep-links { display: flex; flex-wrap: wrap; gap: .5rem; }
+.prep-links .button, .reading-guide > .button { display: inline-flex; align-items: center; text-decoration: none; }
+.reading-guide { display: grid; gap: .85rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); padding: clamp(1rem, 2vw, 1.6rem); margin-block-end: 1rem; }
+.reading-guide > p, .reading-excerpts p { color: var(--muted-ink); }
+.reading-papers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; align-items: start; }
+.reading-paper { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; }
+.reading-excerpts { padding-inline-start: 1.5rem; margin-block-start: .55rem; }
+.reading-excerpts li + li { margin-block-start: .9rem; }
+.reading-excerpts p { margin-block: .18rem .25rem; }
+.reading-excerpts a { font-weight: 700; font-size: .9rem; }
+.ecn-note { background: var(--soft); border-radius: 9px; padding: .7rem .8rem; margin-block-start: 1rem; }
+.ecn-note h4 { margin: 0 0 .25rem; }
+.reading-guide > .button { justify-self: start; }
+#reading, #start-simulation { scroll-margin-block-start: 1rem; }
 .journey { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; align-items: center; padding: .7rem .95rem; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); margin-block-end: 1rem; }
 .journey-cases { list-style: none; padding: 0; grid-column: 1/-1; display: grid; grid-template-columns: repeat(3, 1fr); gap: .45rem; margin-block-end: .6rem; }
 .journey-cases li { display: flex; align-items: center; gap: .5rem; min-height: 36px; color: var(--muted-ink); padding-inline: .34rem; font-size: .91rem; }
@@ -134,7 +143,7 @@ textarea { width: 100%; resize: vertical; }
   .workspace { grid-template-columns: 1fr; }
   .page { width: min(100% - 1.2rem, 690px); padding-block-start: 1.1rem; }
   .page-header { flex-wrap: wrap; gap: .7rem; margin-block-end: .85rem; }
-  .reading { max-width: 100%; }
+  .reading-papers { grid-template-columns: 1fr; }
   .rp-network { height: 282px; }
 }
 @media (max-width: 420px) {
