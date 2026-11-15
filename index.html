@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="פעילות הכנה ליחידת הניתוב. חוקרים שני מצבי עומס ומשווים בין ECMP, WCMP ו־FlowBender.">
+  <title>מעבדת ניתוב | הכנה לדיון</title>
+  <link rel="stylesheet" href="lab.css">
+  <script defer src="lab.js"></script>
+</head>
+<body>
+<main id="routing-classroom-activity" class="page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">יחידה 4 · ניתוב במרכזי נתונים</p>
+      <h1>מעבדת ניתוב</h1>
+      <p class="intro">שתי עבודות מסתיימות לאט. מה השתנה ברשת, ואיך כדאי להגיב?</p>
+      <p class="intro intro-secondary">צפו בהרצה, בחרו הסבר, ונסו שיטת ניתוב. בסוף השוו כמה זמן לקח לזרימה האחרונה לסיים.</p>
+    </div>
+    <details class="reading">
+      <summary>מושגים ומאמרים</summary>
+      <dl>
+        <dt><bdi>ECMP</bdi></dt><dd>גיבוב משבץ כל זרימה למסלול מבין האפשרויות השוות.</dd>
+        <dt><bdi>WCMP</bdi></dt><dd>הגיבוב נותן יותר סיכוי למסלול בעל משקל גבוה יותר.</dd>
+        <dt><bdi>FlowBender</bdi></dt><dd>השולח מנסה גיבוב חדש כשמשוב הגודש חוצה סף.</dd>
+      </dl>
+      <div class="reading-links">
+        <a href="https://www.sysnet.ucsd.edu/sysnet/miscpapers/wcmp-eurosys-final.pdf" target="_blank" rel="noopener"><bdi>WCMP</bdi> · סעיף 3.1 ואיור 3</a>
+        <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf" target="_blank" rel="noopener"><bdi>FlowBender</bdi> · סעיפים 3.3.1–3.3.2</a>
+      </div>
+    </details>
+  </header>
+
+  <nav class="journey" aria-label="התקדמות בפעילות">
+    <ol class="journey-cases">
+      <li id="rp-case-a"><span class="journey-number">א</span><span>מקרה ראשון</span></li>
+      <li id="rp-case-b"><span class="journey-number">ב</span><span>מקרה שני</span></li>
+      <li id="rp-case-review"><span class="journey-number">ג</span><span>סיכום לכיתה</span></li>
+    </ol>
+    <div id="rp-stage-progress" class="progress" role="progressbar" aria-label="התקדמות בפעילות" aria-valuemax="13" aria-valuemin="0" aria-valuenow="0"><span id="rp-stage-fill"></span></div>
+    <div id="rp-stage" class="journey-count"></div>
+  </nav>
+
+  <div class="workspace">
+    <section class="task" aria-labelledby="rp-heading">
+      <ol class="step-list" id="rp-steps" aria-label="שלבי המקרה">
+        <li>בסיס</li><li>תצפית</li><li>אבחון</li><li>ניסוי</li><li>השוואה</li>
+      </ol>
+      <h2 id="rp-heading" tabindex="-1"></h2>
+      <p id="rp-context" class="context"></p>
+      <div id="rp-question-title" class="question-title"></div>
+      <div id="rp-answers" class="answers" role="group" aria-labelledby="rp-question-title">
+        <button type="button" class="answer" id="rp-option-0" aria-pressed="false"><span class="answer-letter" aria-hidden="true">א</span><span><strong id="rp-option-name-0" hidden></strong><span id="rp-option-text-0"></span></span></button>
+        <button type="button" class="answer" id="rp-option-1" aria-pressed="false"><span class="answer-letter" aria-hidden="true">ב</span><span><strong id="rp-option-name-1" hidden></strong><span id="rp-option-text-1"></span></span></button>
+        <button type="button" class="answer" id="rp-option-2" aria-pressed="false"><span class="answer-letter" aria-hidden="true">ג</span><span><strong id="rp-option-name-2" hidden></strong><span id="rp-option-text-2"></span></span></button>
+      </div>
+      <div class="feedback" id="rp-feedback" aria-live="polite" hidden></div>
+      <section id="rp-class-note" class="class-note" aria-labelledby="note-title" hidden>
+        <h3 id="note-title">משפט אחד להביא לכיתה</h3>
+        <label for="rp-note">דמיינו שאתם השולח וקיבלתם חיווי גודש. איזו ראיה מהסימולציה הייתה עוזרת לכם לבחור פעולה, ומה ממנה השולח לא יכול לראות?</label>
+        <textarea id="rp-note" rows="4" maxlength="500" placeholder="כדי להחליט אם לנסות מסלול אחר, הייתי רוצה לדעת…"></textarea>
+        <p class="fine">התשובה נשמרת בדפדפן שלכם. אפשר להביא אותה לדיון. אין עליה ציון.</p>
+      </section>
+      <div class="task-footer">
+        <p id="rp-next-hint" class="fine"></p>
+        <div class="action-row">
+          <div class="primary-slot">
+            <button type="button" class="button primary" id="rp-guide" hidden>להרצה ↓</button>
+            <button type="button" class="button primary" id="rp-check" disabled hidden>בדיקת תשובה</button>
+            <button type="button" class="button primary" id="rp-next" disabled hidden>הבא</button>
+          </div>
+          <button type="button" class="button subtle" id="rp-back" disabled>חזרה</button>
+        </div>
+        <button type="button" class="button subtle" id="rp-another" disabled hidden>לנסות שיטה אחרת</button>
+      </div>
+    </section>
+
+    <section class="simulation" aria-labelledby="sim-title">
+      <div class="sim-header">
+        <div><h2 id="sim-title">הרשת בזמן ההרצה</h2><p id="rp-run-title"></p></div>
+        <span id="rp-active-method" dir="ltr" class="method"></span>
+      </div>
+      <div class="diagram-card">
+        <div class="diagram-controls">
+          <div class="transport" aria-label="בקרת הרצה">
+            <button id="rp-play" type="button" class="button run">הרצה</button>
+            <button id="rp-pause" type="button" class="button deck-button" disabled>השהיה</button>
+            <button id="rp-restart" type="button" class="button deck-button">איפוס הרצה</button>
+          </div>
+          <label class="speed">מהירות <output id="rp-speed-label" dir="ltr">1×</output><input type="range" id="rp-speed" min=".25" max="2" step=".25" value="1"></label>
+        </div>
+        <div class="diagram">
+          <svg id="rp-network" class="rp-network" role="img" aria-label="שולחים, שני מסלולים, חבילות, קיבולות ותורים"></svg>
+        </div>
+        <div class="diagram-status" id="rp-clock"></div>
+        <p class="diagram-key">צבע ומספר מזהים זרימה · קו מקווקו בין המתגים מציין קישור כבוי · מסגרת עבה מציינת חבילה שסומנה בגודש</p>
+      </div>
+      <div id="rp-event" class="event" aria-live="polite" hidden></div>
+      <a href="#rp-heading" id="rp-return" class="button subtle return-link" hidden>להמשך הפעילות ↑</a>
+      <section id="rp-comparison" class="analysis-panel" aria-labelledby="comparison-title" hidden>
+        <div class="panel-head">
+          <h3 id="comparison-title">מה קרה לתור?</h3>
+          <label>מסלול <select id="rp-chart-path"><option value="0">א׳</option><option value="1">ב׳</option></select></label>
+        </div>
+        <div class="chart-legend"><span class="chart-key baseline">בסיס · <bdi>ECMP</bdi></span><span class="chart-key">ניסוי · <bdi id="rp-chart-method"></bdi></span></div>
+        <svg id="rp-chart" class="rp-chart" viewBox="0 0 420 155" role="img" aria-label="אורך התור לפי מחזור"></svg>
+        <p id="rp-chart-summary"></p>
+        <p class="fine">כל קו מסתיים כשהחבילה האחרונה באותה הרצה מגיעה.</p>
+      </section>
+      <section id="rp-tracker" class="analysis-panel" aria-labelledby="track-title" hidden>
+        <div class="panel-head"><h3 id="track-title">מעקב אחרי זרימה</h3>
+          <label id="rp-flow-picker" hidden>הבלטה <select id="rp-flow-filter"><option value="all">כל הזרימות</option><option value="0">זרימה 1</option><option value="1">זרימה 2</option><option value="2">זרימה 3</option><option value="3">זרימה 4</option><option value="4">זרימה 5</option><option value="5">זרימה 6</option></select></label>
+        </div>
+        <p id="rp-track-status"></p>
+        <ol id="rp-timeline" class="timeline"></ol>
+      </section>
+      <div id="rp-scores" class="scores"></div>
+      <details id="rp-flow-details" class="flow-details"><summary>זמן השלמה של כל זרימה</summary><div id="rp-flow-progress"></div></details>
+    </section>
+  </div>
+  <footer class="page-footer">
+    <details>
+      <summary>מה המודל מדמה?</summary>
+      <p>בכל הרצה מתחילות זרימות חדשות. כל שולח מייצר חבילה במחזור וכל קישור פעיל מעביר חבילה במחזור. בניסוי התיקון שומרים על תנאי הרצת הבסיס ומחליפים רק את מדיניות הניתוב.</p>
+      <p>המתגים מסמנים גודש כשהתור מגיע לארבע חבילות. המשוב חוזר באיחור והשולח בודק אותו בחלונות זמן. המודל מפשט את עדכוני הבקר, בקרת הקצב, אובדן חבילות ושינוי סדר הגעתן. זמני הסיום הם תוצאות הסימולציה.</p>
+    </details>
+  </footer>
+</main>
+</body>
+</html>
