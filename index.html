@@ -17,13 +17,14 @@
       <p class="intro">שתי עבודות מסתיימות לאט. מה השתנה ברשת, ואיך כדאי להגיב?</p>
       <p class="intro intro-secondary">צפו בהרצה, בחרו הסבר, ונסו שיטת ניתוב. בסוף השוו כמה זמן לקח לזרימה האחרונה לסיים.</p>
     </div>
-    <div class="prep-links" lang="en" dir="ltr">
-      <a class="button primary" href="#reading">Read the excerpts</a>
-      <a class="button subtle" href="#start-simulation">Start the simulation</a>
-    </div>
   </header>
 
-  <section class="reading-guide" id="reading" lang="en" dir="ltr" aria-labelledby="reading-title">
+  <div class="activity-tabs" role="tablist" aria-label="חלקי הפעילות">
+    <a id="reading-tab" role="tab" aria-controls="reading" aria-selected="true" href="#reading">קריאה מקדימה</a>
+    <a id="simulation-tab" role="tab" aria-controls="simulation-panel" aria-selected="false" tabindex="-1" href="#start-simulation">סימולציה ושאלות</a>
+  </div>
+
+  <section class="reading-guide" id="reading" lang="en" dir="ltr" role="tabpanel" aria-labelledby="reading-tab" tabindex="0">
     <h2 id="reading-title">Read before you run</h2>
     <p>Read the short excerpts in order. PDF page numbers start at the first page of the file. Count lines from the start of the specified paragraph.</p>
     <div class="reading-papers">
@@ -70,6 +71,7 @@
     <a class="button primary" href="#start-simulation">Start the simulation</a>
   </section>
 
+  <section id="simulation-panel" role="tabpanel" aria-labelledby="simulation-tab">
   <nav class="journey" id="start-simulation" tabindex="-1" aria-label="התקדמות בפעילות">
     <ol class="journey-cases">
       <li id="rp-case-a"><span class="journey-number">א</span><span>מקרה ראשון</span></li>
@@ -164,6 +166,8 @@
       <p>המתגים מסמנים גודש כשהתור מגיע לארבע חבילות. המשוב חוזר באיחור והשולח בודק אותו בחלונות זמן. המודל מפשט את עדכוני הבקר, בקרת הקצב, אובדן חבילות ושינוי סדר הגעתן. זמני הסיום הם תוצאות הסימולציה.</p>
     </details>
   </footer>
+  </section>
 </main>
+<script src="tabs.js"></script>
 </body>
 </html>
