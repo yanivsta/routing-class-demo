@@ -1,56 +1,43 @@
 (() => {
-  const tabs = [...document.querySelectorAll('.activity-tabs [role="tab"]')];
-  const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+  const sections = [...document.querySelectorAll('.activity-tabs button')];
+  const panels = sections.map(button => document.getElementById(button.getAttribute('aria-controls')));
+  let active = -1;
 
-  function showTab(index) {
-    if (index === 0) document.getElementById('rp-pause').click();
-    tabs.forEach((tab, i) => {
-      const selected = i === index;
-      tab.setAttribute('aria-selected', String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-      panels[i].hidden = !selected;
+  function showSection(index) {
+    if (active === 1 && index !== 1) document.getElementById('rp-pause').click();
+    active = index;
+    sections.forEach((button, i) => {
+      button.setAttribute('aria-expanded', String(i === active));
+      panels[i].hidden = i !== active;
     });
   }
 
-  function navigate(index) {
-    const hash = tabs[index].hash;
-    if (location.hash !== hash) {
-      try {
-        history.pushState(null, '', hash);
-      } catch {
-        location.hash = hash;
-      }
+  function clearFragment() {
+    if (!location.hash) return;
+    try {
+      history.replaceState(null, '', location.pathname + location.search);
+    } catch {
+      location.hash = '';
     }
-    showTab(index);
   }
 
   function syncFromHash() {
-    showTab(['#start-simulation', '#simulation-panel', '#rp-heading'].includes(location.hash) ? 1 : 0);
+    if (location.hash === '#reading') showSection(0);
+    else if (['#start-simulation', '#simulation-panel', '#rp-heading'].includes(location.hash)) showSection(1);
+    else showSection(-1);
   }
 
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', event => {
-      event.preventDefault();
-      navigate(index);
-    });
-    tab.addEventListener('keydown', event => {
-      const next = {
-        ArrowRight: 1 - index,
-        ArrowLeft: 1 - index,
-        Home: 0,
-        End: tabs.length - 1,
-        ' ': index,
-      }[event.key];
-      if (next === undefined) return;
-      event.preventDefault();
-      navigate(next);
-      tabs[next].focus();
+  sections.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      clearFragment();
+      showSection(active === index ? -1 : index);
     });
   });
 
   document.querySelector('.reading-guide > a[href="#start-simulation"]').addEventListener('click', event => {
     event.preventDefault();
-    navigate(1);
+    clearFragment();
+    showSection(1);
     document.getElementById('start-simulation').focus();
   });
 

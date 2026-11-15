@@ -6,7 +6,7 @@
       this.t=0;this.caps=observation?[3,3]:(caseId==='a'?[1,3]:[3,3]);
       this.flows=[];this.queues=[[],[]];this.flights=[];this.feedback=[];this.acks=[];this.peak=[0,0];this.incoming=[0,0];this.queueHistory=[[0],[0]];
       this.seed=101;this.changed=!observation;this.done=false;this.moves=0;this.attempts=0;
-      this.event=observation?'הרשת תקינה: ארבע זרימות, שתיים בכל מסלול.':'זרימות חדשות מתחילות ברשת שאחרי השינוי.';
+      this.event=observation?'The network is healthy, with flows evenly split between the two paths.':'New flows start under the changed network conditions.';
       const hashes=caseId==='b'?(observation?[.1,.2,.3,.6,.7,.9]:[.1,.2,.3,.4,.45,.9]):[.1,.4,.6,.9];
       hashes.forEach(h=>this.addFlow(h));
     }
@@ -20,8 +20,8 @@
       this.t++;
       if(this.observation&&!this.healthy&&this.t===1) {
         this.changed=true;
-        if(this.caseId==='a') {this.caps=[1,3];this.event='שני קישורים במסלול א׳ כבו. שיבוץ הזרימות לא השתנה.';}
-        else {this.flows.forEach((f,i)=>f.path=i<5?0:1);this.event='חמש זרימות שובצו למסלול א׳ ואחת למסלול ב׳. כל הקישורים פעילים.';}
+        if(this.caseId==='a') {this.caps=[1,3];this.event='Two links on path A went down. Flow assignments stayed the same.';}
+        else {this.flows.forEach((f,i)=>f.path=i<5?0:1);this.event='Five flows were assigned to path A and one to path B. All links are up.';}
       }
       if(this.t===1)this.initialPaths=this.flows.map(f=>f.path);
       const arrived=this.flights.filter(p=>p.end<=this.t);
@@ -46,7 +46,7 @@
           f.marked++;
           if(!f.feedbackSeen){
             f.feedbackSeen=true;
-            f.events.push({cycle:this.t,label:'אישור עם חיווי גודש הגיע לשולח.'});
+            f.events.push({cycle:this.t,label:'A congestion-marked acknowledgment reached the sender.'});
           }
         }
       }
@@ -54,12 +54,12 @@
         if(this.policy==='fb'&&this.t>f.id*2&&(this.t-f.id*2)%8===0) {
           if(f.samples&&f.marked/f.samples>.05&&f.sent<48) {
             const old=f.path;f.path=this.random()<.5?0:1;this.attempts++;
-            const path=f.path?'ב׳':'א׳';
+            const path=f.path?'B':'A';
             const percentage=Math.round(100*f.marked/f.samples);
             f.events.push({cycle:this.t,label:old===f.path
-              ? `${percentage}% מהאישורים בחלון העידו על גודש. השולח שינה את קלט הגיבוב, והמתג שוב בחר במסלול ${path}.`
-              : `${percentage}% מהאישורים בחלון העידו על גודש. השולח שינה את קלט הגיבוב, וחבילות חדשות יוצאות למסלול ${path}.`});
-            if(old!==f.path){this.moves++;this.event=`זרימה ${f.id+1}: בעקבות משוב גודש, חבילות חדשות נשלחות למסלול ${f.path?'ב׳':'א׳'}.`;}
+              ? `${percentage}% of acknowledgments in this window reported congestion. The sender changed the hash input, and the switch selected path ${path}.`
+              : `${percentage}% of acknowledgments in this window reported congestion. The sender changed the hash input, and new packets now take path ${path}.`});
+            if(old!==f.path){this.moves++;this.event=`Flow ${f.id+1}: After congestion feedback, new packets take path ${f.path?'B':'A'}.`;}
           }
           f.samples=0;f.marked=0;
         }
@@ -72,7 +72,7 @@
           const f=this.flows[p.flow];
           if(marked&&!f.markedSeen){
             f.markedSeen=true;
-            f.events.push({cycle:this.t,label:`המתג במסלול ${path?'ב׳':'א׳'} סימן חבילה בגודש.`});
+            f.events.push({cycle:this.t,label:`The switch on path ${path?'B':'A'} marked a packet for congestion.`});
           }
           this.flights.push({...p,lane:k,phase:'out',start:this.t,end:this.t+4,marked:p.marked||marked});
         }
@@ -82,7 +82,7 @@
         this.peak[i]=Math.max(this.peak[i],q.length);
         this.queueHistory[i].push(q.length);
       });
-      if(this.done)this.event='כל החבילות נמסרו למקבל.';
+      if(this.done)this.event='All packets reached the receiver.';
     }
   }
   const root=document.getElementById('routing-classroom-activity');
@@ -103,19 +103,19 @@
   let records={a:blankCase(),b:blankCase()},results={a:{},b:{}},quiz=[blankAnswer(),blankAnswer(),blankAnswer()],quizIndex=0,note='';
   let model,view=null,running=false,frame=0,lastTick=0,lastPaint=0,recorded=false;
   let trackedFlow=0,chartPath=0,chartKey='',timelineKey='',prediction=null;
-  const predictions=['כבר בשיבוץ ההתחלתי','אחרי שמגיע משוב גודש','השיבוץ יישאר זהה'];
+  const predictions=['At the initial assignment','After congestion feedback arrives','The assignment will stay the same'];
   const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const headings=['הכירו את הרשת','צפו במה שהשתנה','אבחון ההאטה','בחירת שיטת ניתוב','השוואת תוצאות'];
+  const headings=['Meet the network','Observe what changed','Diagnose the slowdown','Choose a routing policy','Compare the results'];
   const quizQuestions=[
-    {title:'מה מבטיח גיבוב קבוע לכל זרימה?',options:['חלוקה מאוזנת של התעבורה בכל רגע','אותו חיבור מקבל אותה בחירת מסלול כל עוד הגדרות הניתוב נשארות קבועות','שכל חבילה נשלחת למסלול אחר'],answer:1,explanation:'הגיבוב משתמש בשדות החיבור כדי לבחור יציאה. הוא אינו מודד תורים, ולכן קבוצת זרימות מסוימת יכולה להתרכז באותו מסלול. יציבות השיבוץ אינה הבטחה לאיזון עומס.',hint:'הבחינו בין יציבות הבחירה עבור חיבור מסוים לבין איזון בין חיבורים שונים.'},
-    {title:'שני מסלולים בעלי קיבולת שווה, אבל נוצר תור רק באחד. איזה מידע יכול לעזור מעבר לקיבולות?',options:['משוב על הגודש שחוותה הזרימה','רק ספירה של הקישורים הפעילים','רק ידיעה שהקיבולת הכוללת ברשת מספיקה'],answer:0,explanation:'מידע על קיבולת מתאר כמה המסלול מסוגל להעביר. משוב גודש מעיד על מה שהזרימה חוותה בפועל. גם כשהקיבולות שוות, שיבוץ הזרימות יכול ליצור עומס שונה.',hint:'הטופולוגיה עשויה להישאר זהה בזמן שהתעבורה משתנה.'},
-    {title:'שיטה סיימה מהר יותר בשני המקרים שניסינו. מה אפשר להסיק מכך?',options:['היא תהיה המהירה ביותר בכל רשת ובכל עומס','אין חשיבות לגודל הזרימות או לקלטי הגיבוב','היא טובה יותר במקרים שנבדקו; נדרשים ניסויים נוספים כדי להכליל'],answer:2,explanation:'המקרים כאן נבחרו כדי להמחיש שני מנגנונים. מספר הזרימות, גודלן, קלטי הגיבוב, הקיבולות והשהיית המשוב יכולים לשנות את התוצאות. גם מדד סיום כל העבודה שונה מזמן השלמה ממוצע של זרימה.',hint:'חשבו מה השתנה בניסוי ומה נשאר קבוע, ואילו תנאים עוד לא בדקנו.'}
+    {title:'What does consistent per-flow hashing guarantee?',options:['Traffic is balanced at every moment','The same flow selects the same path while routing settings stay fixed','Every packet takes a different path'],answer:1,explanation:'The hash uses header fields to choose an output port. Several flows can share one path because the hash has no information about queue lengths.',hint:'Think about one flow’s path choice and how different flows are distributed.'},
+    {title:'Two paths have equal capacity, but only one develops a queue. What information would help beyond knowing their capacities?',options:['Feedback about the congestion a flow experienced','Only the number of active links','Only that the overall network capacity is sufficient'],answer:0,explanation:'Capacity tells you how much a path can carry. Congestion feedback reports what the flow experienced. Flow assignments can place different loads on paths with equal capacity.',hint:'The topology can stay the same while traffic changes.'},
+    {title:'Suppose a policy finished faster in both cases we tried. What can we conclude?',options:['It will be fastest in every network and under every workload','Flow sizes and hash inputs do not matter','It was faster in the cases tested. Generalizing requires more experiments'],answer:2,explanation:'Flow count, flow sizes, hash inputs, capacities, and feedback delay may all affect the outcome. We also measured when the last flow finished, which is a different metric from average flow completion time.',hint:'Think about which conditions we tested and what else could change.'}
   ];
   function caseQuestion(kind){
     const a=caseId==='a';
-    if(kind==='diagnosis')return {title:'מה גרם להאטה בהרצה השנייה?',options:['חלק מהקישורים הפסיקו להעביר תעבורה','גיבוב הזרימות יצר שיבוץ לא מאוזן','המקבל מגביל את שני המסלולים'],answer:a?0:1,explanation:a?'שני קישורים במסלול א׳ כבו והקיבולת שלו ירדה מ־3 ל־1. מספר הזרימות בו נשאר שתיים, ולכן מגיעות שתי חבילות במחזור אך רק אחת יכולה לצאת. העודף ממתין בתור.':'אותם שישה שולחים ואותם קישורים נשארו ברשת. בהרצה החדשה חמש זרימות שובצו למסלול א׳ ורק אחת לב׳. א׳ מקבל חמש חבילות במחזור ומעביר שלוש, בזמן שבב׳ נותרת קיבולת פנויה.',hint:'בדקו מה השתנה: מספר הקישורים הפעילים או חלוקת הזרימות.'};
-    if(kind==='evidence')return {title:'איזה סימן בתצוגה תומך באבחנה?',options:['מספר השולחים גדל בין ההרצות','שני קישורים במסלול א׳ כבו','כל הקישורים פעילים, אבל חלוקת הזרימות היא 5–1'],answer:2,explanation:'זהו חוסר איזון בשיבוץ. הקיבולת הכוללת נשארה שש חבילות במחזור, אבל חמש משש הזרימות חולקות מסלול שמעביר שלוש בלבד. הקיבולת הפנויה במסלול האחר אינה עוזרת כל עוד השיבוץ קבוע.',hint:'ספרו את השולחים, הקישורים והזרימות שמשויכות לכל מסלול.'};
-    return {title:a?'איזה מידע מאפשר לבחור משקלים מתאימים למקרה א׳?':'איזה מידע נוסף מאפשר לשולח להגיב לעומס במקרה ב׳?',options:a?['מספר החבילות שכבר הגיעו בלבד','הקיבולות האפקטיביות של המסלולים','הנחה שכל זרימה יודעת מהו המסלול הפנוי']:['מספר השולחים בלבד','רק העובדה שהקיבולות שוות','סימוני גודש שחוזרים לשולח דרך המקבל'],answer:a?1:2,explanation:a?'ידיעת הקיבולות מאפשרת להפחית את הסיכוי שזרימה חדשה תישלח למסלול החלש. המשקלים מבטאים יחס קיבולות; הם אינם מדידה של התור בכל רגע.':'משוב גודש מעיד שהזרימה חוותה עומס בדרך. השולח יכול לנסות גיבוב חדש, אבל אינו מקבל מפה של העומסים בכל המסלולים ואינו יודע מראש שהניסיון יצליח.',hint:'הבחינו בין מידע על מבנה הרשת לבין מידע על העומס שהזרימה חוותה.'};
+    if(kind==='diagnosis')return {title:'What caused the slowdown in the second run?',options:['Some links stopped carrying traffic','Hashing assigned flows unevenly','The receiver limits both paths'],answer:a?0:1,explanation:a?'Two links on path A went down, cutting its capacity from three packets per cycle to one. Two packets still arrive per cycle, and the excess builds up in the queue.':'The same six senders and links are in use. Five flows now share path A and one uses path B. Path A receives five packets per cycle but can forward only three, while path B has spare capacity.',hint:'Check whether the number of active links or the distribution of flows changed.'};
+    if(kind==='evidence')return {title:'What evidence in the diagram supports your diagnosis?',options:['There are more senders than in the first run','Two links on path A went down','All links are up, but flows are split five to one'],answer:2,explanation:'Total capacity is still six packets per cycle. Five of the six flows share a path that can carry only three packets per cycle. The spare capacity on the other path goes unused with this assignment.',hint:'Count the senders, active links, and flows assigned to each path.'};
+    return {title:a?'What information helps choose suitable weights in Case A?':'What additional information helps the sender respond to congestion in Case B?',options:a?['Only the number of packets already delivered','The effective capacities of the paths','An assumption that every flow knows which path is free']:['Only the number of senders','Only that the capacities are equal','Congestion marks echoed by the receiver'],answer:a?1:2,explanation:a?'Knowing the capacities lets WCMP assign fewer new flows to the constrained path. The weights reflect the capacity ratio.':'Congestion feedback tells the sender its flow experienced congestion. The sender can try a new hash input and use later feedback to see whether it helped.',hint:'Think about what the topology tells you and what the flow experienced.'};
   }
   function activeQuestion(){
     if(mode==='quiz')return {data:quizQuestions[quizIndex],state:quiz[quizIndex],key:'quiz'};
@@ -170,7 +170,7 @@
   }
   function scoreTable(c){
     const rows=Object.entries(results[c]);
-    return rows.length?'<table class="table table-sm"><thead><tr><th>שיטה</th><th>סיום כל העבודה</th></tr></thead><tbody>'+rows.map(([p,t])=>`<tr><td><div dir="ltr">${names[p]}</div>${p==='ecmp'?'<span class="text-small">הרצת הבסיס הבעייתית</span>':''}</td><td class="tabular-nums">${t} מחזורים</td></tr>`).join('')+'</tbody></table>':'';
+    return rows.length?'<table class="table table-sm"><thead><tr><th>Policy</th><th>Time until all flows finish</th></tr></thead><tbody>'+rows.map(([p,t])=>`<tr><td><div dir="ltr">${names[p]}</div>${p==='ecmp'?'<span class="text-small">Slow baseline run</span>':''}</td><td class="tabular-nums">${t} cycles</td></tr>`).join('')+'</tbody></table>':'';
   }
   const baselineRuns={};
   function getBaseline(c){
@@ -208,8 +208,8 @@
       const t=Math.round(i*duration/4);
       label(x(t),132,t);
     }
-    label(x(0),12,'חבילות בתור','start');
-    label((x(0)+x(duration))/2,150,'מחזור סימולציה');
+    label(x(0),12,'Packets queued','start');
+    label((x(0)+x(duration))/2,150,'Simulation cycle');
     const series=(values,color,dashed)=>{
       const points=values.map((q,t)=>`${x(t).toFixed(2)},${y(q).toFixed(2)}`).join(' ');
       make('polyline',{points,fill:'none',stroke:color,'stroke-width':dashed?2:3,
@@ -218,11 +218,11 @@
     series(trial,'var(--viz-series-1)',false);
     series(baseline,'var(--muted-foreground)',true);
     $('chart-method').textContent=names[model.policy];
-    const path=chartPath?'ב׳':'א׳';
-    plot.setAttribute('aria-label',`אורך התור לאורך זמן במסלול ${path}`);
+    const path=chartPath?'B':'A';
+    plot.setAttribute('aria-label',`Queue length over time on path ${path}`);
     const identical=trial.length===baseline.length&&trial.every((q,t)=>q===baseline[t]);
-    $('chart-summary').textContent=`מסלול ${path} · שיא התור: ${base.peak[chartPath]} חבילות בבסיס, ${model.peak[chartPath]} בניסוי.`+
-      (identical?' שני הקווים חופפים.':'');
+    $('chart-summary').textContent=`Path ${path} · Peak queue: ${base.peak[chartPath]} packets in the baseline, ${model.peak[chartPath]} in the trial.`+
+      (identical?' The two lines overlap.':'');
   }
   function renderTracker(){
     const visible=mode==='cases'&&caseId==='b';
@@ -231,8 +231,8 @@
     if(!visible){timelineKey='';return;}
     const selected=model.flows[trackedFlow];
     $('flow-filter').value=selected?String(trackedFlow):'all';
-    const status=selected?`זרימה ${selected.id+1} · שיבוץ נוכחי למסלול ${selected.path?'ב׳':'א׳'} · נמסרו ${selected.received}/48 חבילות`
-      :'בחרו זרימה כדי להדגיש את החבילות שלה ולהציג את האירועים שלה.';
+    const status=selected?`Flow ${selected.id+1} · Current path: ${selected.path?'B':'A'} · ${selected.received}/48 packets delivered`
+      :'Select a flow to highlight its packets and view its events.';
     $('track-status').textContent=status;
     const events=selected?.events??[];
     const key=JSON.stringify([selected?.id,model.done,events]);
@@ -243,28 +243,28 @@
     const add=text=>{
       const row=document.createElement('li');row.textContent=text;$('timeline').append(row);
     };
-    if(!events.length)add(model.done?'לזרימה הזאת לא היו סימוני גודש בהרצה.':'כשחבילה של הזרימה תסומן בגודש, יופיע כאן מספר המחזור.');
-    else for(const event of events)add(`מחזור ${event.cycle} · ${event.label}`);
+    if(!events.length)add(model.done?'No packets in this flow were marked for congestion during the run.':'If a packet in this flow is marked for congestion, the cycle will appear here.');
+    else for(const event of events)add(`Cycle ${event.cycle} · ${event.label}`);
   }
   function resultExplanation(){
     const base=results[caseId].ecmp||model.t,delta=base-model.t;
-    const effect=delta>0?`נחסכו ${delta} מחזורים.`:delta===0?'זמן הסיום נשאר זהה.':`נוספו ${-delta} מחזורים.`;
-    const why=model.policy==='wcmp'?(caseId==='a'?'המשקלים 1:3 שיבצו במקרה הזה זרימה אחת במסלול החלש ושלוש בחזק, בהתאמה לקיבולות. זהו שיבוץ התחלתי של זרימות חדשות.':'הקיבולות שוות, ולכן גם המשקלים שווים. עם אותם קלטי גיבוב מתקבלת שוב חלוקת 5–1; המשקלים אינם מבטאים את העומס בפועל.'):model.policy==='fb'?'השולחים קיבלו משוב גודש וניסו גיבוב חדש במהלך ההעברה. המשוב מגיע אחרי השהיה, וניסיון גיבוב עשוי לבחור שוב את אותו מסלול.':'הגיבוב הקבוע שמר על אותו שיבוץ. הוא אינו משתמש במידע על גודש כדי להעביר זרימה למסלול אחר.';
-    const suggestion=delta<=0?'כדאי להריץ עוד פתרון ולראות אם יש שיפור.':caseId==='a'&&model.policy!=='wcmp'?'הבחירה עזרה. אפשר לבדוק אם שיטה נוספת מקצרת עוד את זמן ההשלמה.':'הבחירה שיפרה את התוצאה במודל הזה. אפשר להשוות גם לשיטה נוספת.';
+    const effect=delta>0?`Saved ${delta} cycles.`:delta===0?'Completion time stayed the same.':`Took ${-delta} extra cycles.`;
+    const why=model.policy==='wcmp'?(caseId==='a'?'The 1:3 weights initially assigned one new flow to the lower-capacity path and three to the higher-capacity path.':'Equal capacities produce equal weights. With the same hash inputs, the flows again split five to one.'):model.policy==='fb'?'Senders received congestion feedback and tried new hash inputs during the transfer. The feedback takes time to arrive, and rehashing can select the same path again.':'Consistent hashing preserved the assignment. ECMP chooses a path from the packet headers without consulting congestion feedback.';
+    const suggestion=delta<=0?'Try another policy and see whether it improves the result.':caseId==='a'&&model.policy!=='wcmp'?'This policy helped. Try another one to see whether it finishes even sooner.':'This policy improved the result. You can compare another policy as well.';
     const original=getBaseline(caseId);
     const initialChanged=model.initialPaths.some((path,i)=>path!==original.initialPaths[i]);
-    const observedText=initialChanged?'השיבוץ השתנה כבר בתחילת ההרצה.'
-      :model.moves?'השיבוץ השתנה לאחר שהגיע משוב גודש.':'השיבוץ נותר זהה לאורך ההרצה.';
-    const forecast=prediction===null?'':`התחזית שלכם: ${predictions[prediction]}. ${observedText}`;
-    return {headline:`${model.t} מחזורים לעומת ${base}. ${effect}`,why,suggestion,forecast};
+    const observedText=initialChanged?'The assignment changed at the start of the trial.'
+      :model.moves?'The assignment changed after congestion feedback arrived.':'The assignment stayed the same throughout the run.';
+    const forecast=prediction===null?'':`Your prediction: ${predictions[prediction]}. ${observedText}`;
+    return {headline:`${model.t} cycles compared with ${base}. ${effect}`,why,suggestion,forecast};
   }
   function updateControls(){
     const playable=mode==='cases'&&(phase<=1||phase===3&&confirmed&&prediction!==null);
     $('play').disabled=!playable||running||model.done;
     $('pause').disabled=!running;
     $('restart').disabled=mode!=='cases'||!model.t||phase>=2&&phase!==3&&phase!==4;
-    $('restart').textContent='איפוס הרצה';
-    $('play').textContent=running?'מריץ…':model.t&&!model.done?'המשך':'הרצה';
+    $('restart').textContent='Reset run';
+    $('play').textContent=running?'Running…':model.t&&!model.done?'Resume':'Run';
     $('another').disabled=mode!=='cases'||phase!==4||running;
     $('back').disabled=running||mode==='cases'&&phase===0||mode==='complete';
   }
@@ -281,34 +281,34 @@
       if(i===phase)step.setAttribute('aria-current','step');
       else step.removeAttribute('aria-current');
     });
-    setText($('stage'),mode==='cases'?`שלב ${phase+1} מתוך 5`:mode==='quiz'?`שאלה ${quizIndex+1} מתוך 3`:'הפעילות הושלמה');
+    setText($('stage'),mode==='cases'?`Step ${phase+1} of 5`:mode==='quiz'?`Question ${quizIndex+1} of 3`:'Activity complete');
     const progress=mode==='complete'?13:mode==='quiz'?10+quizIndex:(caseId==='a'?0:5)+phase;
     $('stage-progress').setAttribute('aria-valuenow',progress);$('stage-fill').style.width=`${progress/13*100}%`;
-    $('run-title').textContent=mode==='cases'?(phase===0?'הרצה ראשונה · מצב תקין':phase<=2?'הרצה שנייה · תנאים שהשתנו':'ניסוי תיקון · אותם תנאים ואותן זרימות חדשות'):'ההרצה האחרונה · לעיון לצד שאלות הסיכום';
+    $('run-title').textContent=mode==='cases'?(phase===0?'First run · Healthy network':phase<=2?'Second run · Changed conditions':'Trial · Same conditions and new flows'):'Most recent run · Review alongside the questions';
     $('active-method').textContent=names[model.policy];$('speed').value=String(speed);$('speed-label').textContent=speed+'×';
-    $('clock').textContent=`מחזור ${model.t} · נמסרו ${model.flows.reduce((s,f)=>s+f.received,0)}/${model.flows.length*48} חבילות`;
+    $('clock').textContent=`Cycle ${model.t} · ${model.flows.reduce((s,f)=>s+f.received,0)}/${model.flows.length*48} packets delivered`;
     $('class-note').hidden=mode!=='complete';
-    $('heading').textContent=mode==='cases'?(phase===3&&confirmed?'תחזית ובדיקת השיטה':headings[phase]):mode==='quiz'?'בודקים את ההבנה':'סיימתם את שני המקרים ואת שאלות הסיכום';
+    $('heading').textContent=mode==='cases'?(phase===3&&confirmed?'Predict and test the policy':headings[phase]):mode==='quiz'?'Check your understanding':'You finished both cases and the review';
     const explanation=phase===4?resultExplanation():null;
-    const instruction=mode==='complete'?'הסתכלו שוב בתוצאות ובחרו ראיה אחת שתוכלו להסביר בכיתה.'
-      :mode==='quiz'?'בחרו תשובה. אחרי הבדיקה יופיע ההסבר.'
-      :phase===0?'בהרצה התקינה שתי היציאות יכולות להעביר שלוש חבילות במחזור כל אחת. שימו לב לכמה זרימות משובצות לכל נתיב.'
-      :phase===1?'הריצו שוב וחפשו רמז להאטה. השוו בין הקיבולת של כל נתיב, מספר הזרימות ששובצו אליו והתור שנוצר.'
-      :phase===2?'בחרו את ההסבר שמתאים למה שראיתם בהרצה.'
-      :phase===3?(confirmed?'בחרו מה אתם מצפים לראות, ואז הריצו את הניסוי.':'בחרו שיטה כדי לבדוק אותה עם אותן זרימות ובאותם תנאי רשת.')
+    const instruction=mode==='complete'?'Review your results and choose one observation to explain in class.'
+      :mode==='quiz'?'Choose an answer to see an explanation.'
+      :phase===0?'In the healthy run, each path can forward three packets per cycle. Watch how many flows are assigned to each path.'
+      :phase===1?'Run again and look for the cause of the slowdown. Compare each path’s capacity, its flow count, and the queue that builds up.'
+      :phase===2?'Choose the explanation that fits what you observed.'
+      :phase===3?(confirmed?'Make a prediction, then run the trial.':'Pick a routing policy to test with the same flows and network conditions.')
       :explanation.headline;
     setText($('context'),instruction);
     const event=mode==='cases'&&phase===4?explanation.suggestion
       :phase===3&&!running&&model.t===0?''
-      :model.observation?(model.done?`ההרצה הסתיימה אחרי ${model.t} מחזורים. בתרשים מופיע עכשיו שיא התור בכל נתיב.`:''):model.event;
+      :model.observation?(model.done?`The run finished in ${model.t} cycles. The diagram now shows the peak queue on each path.`:''):model.event;
     setText($('event'),event);
     $('event').hidden=!event;
     $('return').hidden=mode!=='cases'||!model.done||phase===3;
-    if($('flow-details').open)$('flow-progress').innerHTML=model.flows.map(f=>`<div class="rp-flow"><span>${f.id+1} → ${f.path?'ב׳':'א׳'}</span><div class="rp-track" role="progressbar" aria-label="חבילות שנמסרו בזרימה ${f.id+1}" aria-valuemin="0" aria-valuemax="48" aria-valuenow="${f.received}"><span style="width:${100*f.received/48}%;background:${colors[f.id]}"></span></div><span class="tabular-nums">${f.received}/48</span></div>${f.finish!==null?`<div class="text-small">זרימה ${f.id+1}: זמן השלמה ${f.finish} מחזורים</div>`:''}`).join('');
-    $('scores').innerHTML=mode==='cases'?(phase===4?scoreTable(caseId)+'<div class="text-small">'+explanation.why+'</div>':'<div class="text-small">מדד ההשוואה: מספר המחזורים עד שכל החבילות נמסרות. הזמן של כל זרימה זמין בפירוט.</div>'):'<div>מקרה א׳</div>'+scoreTable('a')+'<div>מקרה ב׳</div>'+scoreTable('b');
+    if($('flow-details').open)$('flow-progress').innerHTML=model.flows.map(f=>`<div class="rp-flow"><span>${f.id+1} → ${f.path?'B':'A'}</span><div class="rp-track" role="progressbar" aria-label="Packets delivered for flow ${f.id+1}" aria-valuemin="0" aria-valuemax="48" aria-valuenow="${f.received}"><span style="width:${100*f.received/48}%;background:${colors[f.id]}"></span></div><span class="tabular-nums">${f.received}/48</span></div>${f.finish!==null?`<div class="text-small">Flow ${f.id+1} finished in ${f.finish} cycles</div>`:''}`).join('');
+    $('scores').innerHTML=mode==='cases'?(phase===4?scoreTable(caseId)+'<div class="text-small">'+explanation.why+'</div>':'<div class="text-small">Compare runs by the number of cycles until all packets arrive. Expand the details to see individual flow completion times.</div>'):'<div>Case A</div>'+scoreTable('a')+'<div>Case B</div>'+scoreTable('b');
     const q=activeQuestion(),trialSetup=mode==='cases'&&phase===3;
     const method=trialSetup&&!confirmed,forecast=trialSetup&&confirmed;
-    $('question-title').textContent=q?q.data.title:method?'איזו שיטה תרצו לבדוק?':forecast?'מתי, אם בכלל, ישתנה שיבוץ הזרימות ביחס להרצת הבסיס?':'';
+    $('question-title').textContent=q?q.data.title:method?'Which routing policy would you like to test?':forecast?'When, if at all, will flow assignments differ from the baseline?':'';
     const visible=!!q||trialSetup;
     $('answers').hidden=!visible;$('answers').setAttribute('aria-hidden',String(!visible));
     for(let i=0;i<3;i++){
@@ -317,17 +317,17 @@
       $('option-'+i).disabled=!visible||running;
       $('option-name-'+i).textContent=method?['ECMP','WCMP','FlowBender'][i]:'';
       $('option-name-'+i).hidden=!method;
-      $('option-text-'+i).textContent=forecast?predictions[i]:method?['גיבוב קבוע לכל זרימה, עם הסתברויות בחירה שוות.','שיבוץ התחלתי בהסתברויות המתאימות לקיבולות המעודכנות.','ניסיון גיבוב חדש במהלך הזרימה בעקבות משוב גודש.'][i]:q?q.data.options[i]:'';
+      $('option-text-'+i).textContent=forecast?predictions[i]:method?['Consistent per-flow hashing with equal path selection probabilities.','Initial assignment using probabilities weighted by the updated capacities.','An attempt to rehash an ongoing flow after congestion feedback.'][i]:q?q.data.options[i]:'';
     }
-    $('check').textContent=method?'להמשיך לתחזית':'בדיקת תשובה';
+    $('check').textContent=method?'Continue to prediction':'Check answer';
     $('check').disabled=running||(!q&&!method)||method&&!policy||!!q&&q.state.choice===null;
     let feedback='';
-    if(q?.state.checked)feedback=(q.state.correct?'נכון. '+q.data.explanation:'נסו שוב. '+q.data.hint);
+    if(q?.state.checked)feedback=(q.state.correct?'Correct. '+q.data.explanation:'Try again. '+q.data.hint);
     else if(phase===4&&mode==='cases')feedback=explanation.forecast;
-    else if(forecast)feedback=prediction===null?'בחרו תחזית כדי להתחיל.':`התחזית שלכם: ${predictions[prediction]}. בדקו אותה מול מה שקורה בהרצה.`;
+    else if(forecast)feedback=prediction===null?'Choose a prediction to start.':`Your prediction: ${predictions[prediction]}. Compare it with what happens during the run.`;
     else if(phase===0&&mode==='cases')feedback=model.done
-      ? 'ההרצה הסתיימה בלי תור מתמשך. קצב הכניסה לכל מסלול היה נמוך מהקיבולת שלו או שווה לה.'
-      : 'זרימה שומרת על השיבוץ שלה לאורך ההרצה. צפו בכמות החבילות שמגיעות לכל מסלול.';
+      ? 'The run finished without a persistent queue. Each path could handle its incoming traffic.'
+      : 'Each flow keeps its assignment during this run. Watch how many packets reach each path.';
     if(q?.state.checked&&phase===4&&explanation.forecast)feedback+=' '+explanation.forecast;
     setText($('feedback'),feedback);
     $('feedback').hidden=!feedback;
@@ -335,21 +335,21 @@
     const allowed=mode==='complete'?false:mode==='quiz'?quiz[quizIndex].correct:phase===0?model.done:phase===1?model.done:phase===2?(sub===1?records[caseId].evidence.correct:records[caseId].diagnosis.correct):phase===4?records[caseId].reflection.correct:false;
     $('next').disabled=running||!allowed;
     $('next').hidden=!allowed;
-    $('next').textContent=mode==='quiz'?(quizIndex===2?'סיום והכנה לכיתה':'לשאלה הבאה')
-      :phase===0?'להרצה השנייה':phase===1?'לאבחון':phase===2?(caseId==='b'&&sub===0?'לשאלת הראיה':'לבחירת שיטה')
-      :caseId==='a'?'למקרה השני':'לשאלות הסיכום';
+    $('next').textContent=mode==='quiz'?(quizIndex===2?'Finish and prepare for class':'Next question')
+      :phase===0?'Go to the second run':phase===1?'Diagnose the slowdown':phase===2?(caseId==='b'&&sub===0?'Review the evidence':'Choose a policy')
+      :caseId==='a'?'Go to Case B':'Go to the review questions';
     $('check').hidden=running||allowed||(!q&&!method);
     $('guide').hidden=mode!=='cases'||running||allowed||!(phase<=1||forecast);
     $('guide').disabled=$('play').disabled;
-    $('guide').textContent=model.t?'המשך הרצה':phase===0?'הרצת מצב תקין':phase===1?'הרצת מצב שהשתנה':'הרצת הניסוי';
+    $('guide').textContent=model.t?'Resume run':phase===0?'Run the healthy network':phase===1?'Run with changed conditions':'Run the trial';
     $('another').hidden=!(forecast&&!running||mode==='cases'&&phase===4||mode==='complete');
     $('another').disabled=$('another').hidden;
-    $('another').textContent=mode==='complete'?'להתחיל את הפעילות מחדש':forecast?'בחירת שיטה אחרת':'לנסות שיטה נוספת';
+    $('another').textContent=mode==='complete'?'Restart the activity':forecast?'Choose another policy':'Try another policy';
     $('back').hidden=$('back').disabled;
     $('next-hint').hidden=mode==='complete'||allowed;
-    setText($('next-hint'),running?'בסיום ההרצה אפשר להמשיך לשלב הבא.'
-      :forecast&&prediction===null?'סמנו תחזית כדי לפתוח את כפתור ההרצה.'
-      :q&&!q.state.checked?'אפשר לנסות שוב אחרי הבדיקה.':'');
+    setText($('next-hint'),running?'Continue to the next step when the run finishes.'
+      :forecast&&prediction===null?'Select a prediction to enable Run.'
+      :q&&!q.state.checked?'You can try again after checking your answer.':'');
     if($('note').value!==note)$('note').value=note;
   }
   function finished(){
@@ -453,25 +453,26 @@
       svg.setAttribute('viewBox',`0 0 ${w} 324`);
       svg.innerHTML='';
       const text=(x,y,label)=>{const n=make('text',{x,y,'text-anchor':'middle'},svg);n.textContent=label;return n;};
-      const title=make('title',{},svg);title.textContent='שני מסלולים. מספר הקווים הפעילים הוא קיבולת המסלול בחבילות למחזור.';
-      text(sx+8,52,'שולחים');text(dx-8,190,'מקבל');
+      const title=make('title',{},svg);title.textContent='Two paths. The number of active links is the path’s capacity in packets per cycle.';
+      text(sx+8,52,'Senders');text(dx-8,190,'Receiver');
       for(const f of model.flows) {
         const y=96+f.id*22;
         make('line',{x1:sx,y1:y,x2:split,y2:cy,class:'rp-structure'},svg);
-        make('circle',{cx:sx,cy:y,r:9,fill:`color-mix(in srgb,${colors[f.id]} 25%,var(--background))`},svg);text(sx,y+4,String(f.id+1));
+        make('circle',{cx:sx,cy:y,r:9,fill:colors[f.id]},svg);
+        text(sx,y+4,String(f.id+1)).setAttribute('class','flow-number');
       }
       for(let path=0;path<2;path++) {
         const y=ys[path];
         make('path',{d:`M${split} ${cy} V${y} H${mid} M${merge} ${y} V${cy}`,class:'rp-structure'},svg);
         for(let k=0;k<3;k++)make('line',{x1:mid+15,y1:y+(k-1)*8,x2:merge-8,y2:y+(k-1)*8,stroke:k<model.caps[path]?'var(--foreground)':'var(--muted-foreground)','stroke-width':1.5,...(k>=model.caps[path]?{'stroke-dasharray':'3 4'}:{})},svg);
-        text((mid+merge)/2,y-30,`מסלול ${path?'ב׳':'א׳'}`);
-        text((mid+merge)/2,y-13,`קיבולת: ${model.caps[path]}`);
+        text((mid+merge)/2,y-30,`Path ${path?'B':'A'}`);
+        text((mid+merge)/2,y-13,`Capacity: ${model.caps[path]}`);
         make('rect',{x:mid-8,y:y-8,width:16,height:16,fill:'var(--muted)',stroke:'var(--border)'},svg);
       }
       make('line',{x1:merge,y1:cy,x2:dx,y2:cy,class:'rp-structure'},svg);
       make('circle',{cx:dx,cy:cy,r:9,fill:'var(--muted)',stroke:'var(--border)'},svg);
       make('line',{x1:dx,y1:298,x2:sx,y2:298,class:'rp-structure','stroke-dasharray':'3 4'},svg);
-      text(w/2,321,'משוב גודש לשולחים ←');
+      text(w/2,321,'Congestion feedback to senders ←');
       const pathInfo=ys.map((y,i)=>text((mid+merge)/2,y-46,''));
       const queues=ys.map(y=>({
         cells:Array.from({length:12},(_,i)=>make('rect',{x:mid-28+(i%6)*10,y:y+17+Math.floor(i/6)*9,width:7,height:6,visibility:'hidden'},svg)),
@@ -485,11 +486,11 @@
     const selected=caseId==='b'?trackedFlow:null;
     const changed=view.tick!==model.t||view.selected!==selected;view.tick=model.t;view.selected=selected;
     if(changed) {
-      view.pathInfo.forEach((n,i)=>{const count=model.flows.filter(f=>f.path===i).length;n.textContent='זרימות: '+count+' · נכנסות: '+model.incoming[i];});
-      view.queues.forEach((q,i)=>{q.label.textContent=model.done?'שיא תור: '+model.peak[i]:'ממתינות: '+model.queues[i].length;q.cells.forEach((cell,j)=>{cell.setAttribute('visibility',j<model.queues[i].length?'visible':'hidden');if(j<model.queues[i].length){
+      view.pathInfo.forEach((n,i)=>{const count=model.flows.filter(f=>f.path===i).length;n.textContent='Flows: '+count+' · arriving: '+model.incoming[i];});
+      view.queues.forEach((q,i)=>{q.label.textContent=model.done?'Peak queue: '+model.peak[i]:'Queued: '+model.queues[i].length;q.cells.forEach((cell,j)=>{cell.setAttribute('visibility',j<model.queues[i].length?'visible':'hidden');if(j<model.queues[i].length){
           const flow=model.queues[i][j].flow;
           cell.setAttribute('fill',colors[flow]);
-          cell.setAttribute('opacity',selected===null||selected===flow?1:.25);
+          cell.setAttribute('opacity',selected===null||selected===flow?1:.58);
         }});});
       const keys=new Set(model.flights.map(p=>`${p.flow}:${p.seq}:${p.phase}`));
       for(const [key,n]of view.active)if(!keys.has(key)){n.g.setAttribute('visibility','hidden');view.free.push(n);view.active.delete(key);}
@@ -497,12 +498,12 @@
         const key=`${p.flow}:${p.seq}:${p.phase}`;
         if(!view.active.has(key)) {
           let n=view.free.pop();
-          if(!n){const g=make('g',{},view.packets);n={g,c:make('circle',{r:7},g),text:make('text',{x:0,y:4,'text-anchor':'middle'},g)};}
-          n.g.setAttribute('visibility','visible');n.c.setAttribute('fill',`color-mix(in srgb,${colors[p.flow]} 30%,var(--background))`);
-          n.c.setAttribute('stroke',p.marked?'var(--foreground)':'var(--border)');n.c.setAttribute('stroke-width',p.marked?2.5:1);
+          if(!n){const g=make('g',{},view.packets);n={g,c:make('circle',{r:7},g),text:make('text',{x:0,y:3.5,'text-anchor':'middle',class:'flow-number packet-number'},g)};}
+          n.g.setAttribute('visibility','visible');n.c.setAttribute('fill',colors[p.flow]);
+          n.c.setAttribute('stroke',p.marked?'var(--foreground)':'var(--background)');n.c.setAttribute('stroke-width',p.marked?2.5:1);
           n.text.textContent=String(p.flow+1);view.active.set(key,n);
         }
-        view.active.get(key).g.setAttribute('opacity',selected===null||selected===p.flow?1:.22);
+        view.active.get(key).g.setAttribute('opacity',selected===null||selected===p.flow?1:.58);
       }
     }
     function interpolate(points,fraction) {
@@ -518,6 +519,13 @@
       view.active.get(`${p.flow}:${p.seq}:${p.phase}`).g.setAttribute('transform',`translate(${x.toFixed(1)},${py.toFixed(1)})`);
     }
     const acks=model.acks.filter(a=>selected===null||a.flow===selected).slice(-12);
-    view.acks.forEach((n,i)=>{n.setAttribute('visibility',i<acks.length?'visible':'hidden');if(i<acks.length)n.setAttribute('cx',dx-(dx-sx)*Math.min(1,(model.t+alpha-acks[i].start)/4));});
+    view.acks.forEach((node,i)=>{
+      const ack=acks[i];
+      node.setAttribute('visibility',ack?'visible':'hidden');
+      if(ack){
+        node.setAttribute('fill',colors[ack.flow]);
+        node.setAttribute('cx',dx-(dx-sx)*Math.min(1,(model.t+alpha-ack.start)/4));
+      }
+    });
   }
 })();

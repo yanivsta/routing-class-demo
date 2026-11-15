@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="פעילות הכנה ליחידת הניתוב. חוקרים שני מצבי עומס ומשווים בין ECMP, WCMP ו־FlowBender.">
-  <title>מעבדת ניתוב | הכנה לדיון</title>
+  <meta name="description" content="A routing lab comparing ECMP, WCMP, and FlowBender across two network scenarios.">
+  <title>Routing Lab | Class Preparation</title>
   <link rel="stylesheet" href="lab.css">
   <script defer src="lab.js"></script>
 </head>
@@ -12,158 +12,165 @@
 <main id="routing-classroom-activity" class="page">
   <header class="page-header">
     <div>
-      <p class="eyebrow">יחידה 4 · ניתוב במרכזי נתונים</p>
-      <h1>מעבדת ניתוב</h1>
-      <p class="intro">שתי עבודות מסתיימות לאט. מה השתנה ברשת, ואיך כדאי להגיב?</p>
-      <p class="intro intro-secondary">צפו בהרצה, בחרו הסבר, ונסו שיטת ניתוב. בסוף השוו כמה זמן לקח לזרימה האחרונה לסיים.</p>
+      <p class="eyebrow">Unit 4 · Data Center Routing</p>
+      <h1>Routing Lab</h1>
+      <p class="intro">Two jobs are running slowly. What changed in the network, and how should we respond?</p>
+      <p class="intro intro-secondary">Observe each run, explain the slowdown, and test a routing policy. Compare how long it takes the last flow to finish.</p>
     </div>
   </header>
 
-  <div class="activity-tabs" role="tablist" aria-label="חלקי הפעילות">
-    <a id="reading-tab" role="tab" aria-controls="reading" aria-selected="true" href="#reading">קריאה מקדימה</a>
-    <a id="simulation-tab" role="tab" aria-controls="simulation-panel" aria-selected="false" tabindex="-1" href="#start-simulation">סימולציה ושאלות</a>
-  </div>
+  <nav class="activity-tabs" aria-label="Activity sections">
+    <button id="reading-tab" type="button" aria-controls="reading" aria-expanded="false">Pre-reading</button>
+    <button id="simulation-tab" type="button" aria-controls="simulation-panel" aria-expanded="false">Simulation and Questions</button>
+  </nav>
 
-  <section class="reading-guide" id="reading" lang="en" dir="ltr" role="tabpanel" aria-labelledby="reading-tab" tabindex="0">
-    <h2 id="reading-title">Read before you run</h2>
+  <section class="reading-guide" id="reading" aria-labelledby="reading-tab" hidden>
+    <h2 id="reading-title">Read before you run <span class="reading-time">(13 min)</span></h2>
     <p>Read the short excerpts in order. PDF page numbers start at the first page of the file. Count lines from the start of the specified paragraph.</p>
     <div class="reading-papers">
-      <article class="reading-paper">
-        <h3>WCMP</h3>
+      <details class="reading-paper">
+        <summary>WCMP <span class="reading-time">(6 min)</span></summary>
+        <div class="reading-content">
         <ol class="reading-excerpts">
-          <li>
-            <strong>The problem</strong>
+          <li><details class="reading-section">
+            <summary>The problem <span class="reading-time">(4 min)</span></summary>
+            <div class="reading-content">
             <p>PDF page 1, Abstract. Read both paragraphs in full: lines 1–12 of paragraph 1 and lines 1–11 of paragraph 2.</p>
-            <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=1" target="_blank" rel="noopener">Open WCMP, PDF page 1</a>
-          </li>
-          <li>
-            <strong>The proposed solution</strong>
+            <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=1" target="_blank" rel="noopener">Open WCMP, PDF page 1</a></div>
+          </details></li>
+          <li><details class="reading-section">
+            <summary>The proposed solution <span class="reading-time">(2 min)</span></summary>
+            <div class="reading-content">
             <p>PDF page 4, Section 3.1, paragraph 2, lines 1–7. Start at “To implement weighted hashing” and stop after “associated with that egress port.”</p>
-            <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">Open WCMP, PDF page 4</a>
-          </li>
-        </ol>
-      </article>
-      <article class="reading-paper">
-        <h3>FlowBender</h3>
+            <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">Open WCMP, PDF page 4</a></div>
+          </details></li>
+        </ol></div>
+      </details>
+      <details class="reading-paper">
+        <summary>FlowBender <span class="reading-time">(7 min)</span></summary>
+        <div class="reading-content">
         <ol class="reading-excerpts">
-          <li>
-            <strong>The problem</strong>
+          <li><details class="reading-section">
+            <summary>The problem <span class="reading-time">(2 min)</span></summary>
+            <div class="reading-content">
             <p>PDF page 1, Abstract, paragraph 1, lines 1–8. Start at “Datacenter networks provide” and stop after “degrading performance of other flows as well.”</p>
-            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=1" target="_blank" rel="noopener">Open FlowBender, PDF page 1</a>
-          </li>
-          <li>
-            <strong>Two ways to compare approaches</strong>
+            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=1" target="_blank" rel="noopener">Open FlowBender, PDF page 1</a></div>
+          </details></li>
+          <li><details class="reading-section">
+            <summary>Two ways to compare approaches <span class="reading-time">(1 min)</span></summary>
+            <div class="reading-content">
             <p>PDF page 2, Introduction, paragraph 3 (the first on this page), lines 1–5. Start at “The solution space for load balancing” and stop after “in a given flow.”</p>
-            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a>
-          </li>
-          <li>
-            <strong>The proposed solution</strong>
+            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a></div>
+          </details></li>
+          <li><details class="reading-section">
+            <summary>The proposed solution <span class="reading-time">(3 min)</span></summary>
+            <div class="reading-content">
             <p>PDF page 2, Introduction, paragraph 4 (the second on this page), lines 1–11. Start at “We propose FlowBender” and stop after “selectively re-routed.”</p>
-            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a>
-          </li>
+            <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a></div>
+          </details></li>
         </ol>
-        <aside class="ecn-note">
-          <h4>How FlowBender uses ECN</h4>
+        <details class="ecn-note reading-section">
+          <summary>How FlowBender uses ECN <span class="reading-time">(1 min)</span></summary>
           <p>A congested switch can mark a packet using Explicit Congestion Notification (ECN). The receiver echoes the congestion signal in its acknowledgment, so the sender learns that the packet encountered congestion along the path. If the fraction of acknowledgments reporting congestion exceeds a threshold, the sender changes a packet header value that the switches use for hashing. Subsequent packets in the same flow may then take a different path.</p>
-        </aside>
-      </article>
+        </details></div>
+      </details>
     </div>
     <a class="button primary" href="#start-simulation">Start the simulation</a>
   </section>
 
-  <section id="simulation-panel" role="tabpanel" aria-labelledby="simulation-tab">
-  <nav class="journey" id="start-simulation" tabindex="-1" aria-label="התקדמות בפעילות">
+  <section id="simulation-panel" aria-labelledby="simulation-tab" hidden>
+  <nav class="journey" id="start-simulation" tabindex="-1" aria-label="Activity progress">
     <ol class="journey-cases">
-      <li id="rp-case-a"><span class="journey-number">א</span><span>מקרה ראשון</span></li>
-      <li id="rp-case-b"><span class="journey-number">ב</span><span>מקרה שני</span></li>
-      <li id="rp-case-review"><span class="journey-number">ג</span><span>סיכום לכיתה</span></li>
+      <li id="rp-case-a"><span class="journey-number">A</span><span>Case A</span></li>
+      <li id="rp-case-b"><span class="journey-number">B</span><span>Case B</span></li>
+      <li id="rp-case-review"><span class="journey-number">C</span><span>Class discussion</span></li>
     </ol>
-    <div id="rp-stage-progress" class="progress" role="progressbar" aria-label="התקדמות בפעילות" aria-valuemax="13" aria-valuemin="0" aria-valuenow="0"><span id="rp-stage-fill"></span></div>
+    <div id="rp-stage-progress" class="progress" role="progressbar" aria-label="Activity progress" aria-valuemax="13" aria-valuemin="0" aria-valuenow="0"><span id="rp-stage-fill"></span></div>
     <div id="rp-stage" class="journey-count"></div>
   </nav>
 
   <div class="workspace">
     <section class="task" aria-labelledby="rp-heading">
-      <ol class="step-list" id="rp-steps" aria-label="שלבי המקרה">
-        <li>בסיס</li><li>תצפית</li><li>אבחון</li><li>ניסוי</li><li>השוואה</li>
+      <ol class="step-list" id="rp-steps" aria-label="Case steps">
+        <li>Baseline</li><li>Observe</li><li>Diagnose</li><li>Test</li><li>Compare</li>
       </ol>
       <h2 id="rp-heading" tabindex="-1"></h2>
       <p id="rp-context" class="context"></p>
       <div id="rp-question-title" class="question-title"></div>
       <div id="rp-answers" class="answers" role="group" aria-labelledby="rp-question-title">
-        <button type="button" class="answer" id="rp-option-0" aria-pressed="false"><span class="answer-letter" aria-hidden="true">א</span><span><strong id="rp-option-name-0" hidden></strong><span id="rp-option-text-0"></span></span></button>
-        <button type="button" class="answer" id="rp-option-1" aria-pressed="false"><span class="answer-letter" aria-hidden="true">ב</span><span><strong id="rp-option-name-1" hidden></strong><span id="rp-option-text-1"></span></span></button>
-        <button type="button" class="answer" id="rp-option-2" aria-pressed="false"><span class="answer-letter" aria-hidden="true">ג</span><span><strong id="rp-option-name-2" hidden></strong><span id="rp-option-text-2"></span></span></button>
+        <button type="button" class="answer" id="rp-option-0" aria-pressed="false"><span class="answer-letter" aria-hidden="true">A</span><span><strong id="rp-option-name-0" hidden></strong><span id="rp-option-text-0"></span></span></button>
+        <button type="button" class="answer" id="rp-option-1" aria-pressed="false"><span class="answer-letter" aria-hidden="true">B</span><span><strong id="rp-option-name-1" hidden></strong><span id="rp-option-text-1"></span></span></button>
+        <button type="button" class="answer" id="rp-option-2" aria-pressed="false"><span class="answer-letter" aria-hidden="true">C</span><span><strong id="rp-option-name-2" hidden></strong><span id="rp-option-text-2"></span></span></button>
       </div>
       <div class="feedback" id="rp-feedback" aria-live="polite" hidden></div>
       <section id="rp-class-note" class="class-note" aria-labelledby="note-title" hidden>
-        <h3 id="note-title">משפט אחד להביא לכיתה</h3>
-        <label for="rp-note">דמיינו שאתם השולח וקיבלתם חיווי גודש. איזו ראיה מהסימולציה הייתה עוזרת לכם לבחור פעולה, ומה ממנה השולח לא יכול לראות?</label>
-        <textarea id="rp-note" rows="4" maxlength="500" placeholder="כדי להחליט אם לנסות מסלול אחר, הייתי רוצה לדעת…"></textarea>
-        <p class="fine">התשובה נשמרת בדפדפן שלכם. אפשר להביא אותה לדיון. אין עליה ציון.</p>
+        <h3 id="note-title">Bring one observation to class</h3>
+        <label for="rp-note">Imagine you are the sender and receive congestion feedback. What evidence from the simulation would help you decide what to do? Which of that evidence can the sender actually see?</label>
+        <textarea id="rp-note" rows="4" maxlength="500" placeholder="Before trying another path, I would want to know…"></textarea>
+        <p class="fine">Your answer is saved in this browser. Bring it to the discussion. It is ungraded.</p>
       </section>
       <div class="task-footer">
         <p id="rp-next-hint" class="fine"></p>
         <div class="action-row">
           <div class="primary-slot">
-            <button type="button" class="button primary" id="rp-guide" hidden>להרצה ↓</button>
-            <button type="button" class="button primary" id="rp-check" disabled hidden>בדיקת תשובה</button>
-            <button type="button" class="button primary" id="rp-next" disabled hidden>הבא</button>
+            <button type="button" class="button primary" id="rp-guide" hidden>Go to the run ↓</button>
+            <button type="button" class="button primary" id="rp-check" disabled hidden>Check answer</button>
+            <button type="button" class="button primary" id="rp-next" disabled hidden>Next</button>
           </div>
-          <button type="button" class="button subtle" id="rp-back" disabled>חזרה</button>
+          <button type="button" class="button subtle" id="rp-back" disabled>Back</button>
         </div>
-        <button type="button" class="button subtle" id="rp-another" disabled hidden>לנסות שיטה אחרת</button>
+        <button type="button" class="button subtle" id="rp-another" disabled hidden>Try another policy</button>
       </div>
     </section>
 
     <section class="simulation" aria-labelledby="sim-title">
       <div class="sim-header">
-        <div><h2 id="sim-title">הרשת בזמן ההרצה</h2><p id="rp-run-title"></p></div>
+        <div><h2 id="sim-title">Network simulation</h2><p id="rp-run-title"></p></div>
         <span id="rp-active-method" dir="ltr" class="method"></span>
       </div>
       <div class="diagram-card">
         <div class="diagram-controls">
-          <div class="transport" aria-label="בקרת הרצה">
-            <button id="rp-play" type="button" class="button run">הרצה</button>
-            <button id="rp-pause" type="button" class="button deck-button" disabled>השהיה</button>
-            <button id="rp-restart" type="button" class="button deck-button">איפוס הרצה</button>
+          <div class="transport" aria-label="Run controls">
+            <button id="rp-play" type="button" class="button run">Run</button>
+            <button id="rp-pause" type="button" class="button deck-button" disabled>Pause</button>
+            <button id="rp-restart" type="button" class="button deck-button">Reset run</button>
           </div>
-          <label class="speed">מהירות <output id="rp-speed-label" dir="ltr">1×</output><input type="range" id="rp-speed" min=".25" max="2" step=".25" value="1"></label>
+          <label class="speed">Speed <output id="rp-speed-label" dir="ltr">1×</output><input type="range" id="rp-speed" min=".25" max="2" step=".25" value="1"></label>
         </div>
         <div class="diagram">
-          <svg id="rp-network" class="rp-network" role="img" aria-label="שולחים, שני מסלולים, חבילות, קיבולות ותורים"></svg>
+          <svg id="rp-network" class="rp-network" role="img" aria-label="Senders, two paths, packets, capacities, and queues"></svg>
         </div>
         <div class="diagram-status" id="rp-clock"></div>
-        <p class="diagram-key">צבע ומספר מזהים זרימה · קו מקווקו בין המתגים מציין קישור כבוי · מסגרת עבה מציינת חבילה שסומנה בגודש</p>
+        <p class="diagram-key">A flow’s number and color identify its packets. Dashed links are down. A thick white outline marks congestion.</p>
       </div>
       <div id="rp-event" class="event" aria-live="polite" hidden></div>
-      <a href="#rp-heading" id="rp-return" class="button subtle return-link" hidden>להמשך הפעילות ↑</a>
+      <a href="#rp-heading" id="rp-return" class="button subtle return-link" hidden>Continue the activity ↑</a>
       <section id="rp-comparison" class="analysis-panel" aria-labelledby="comparison-title" hidden>
         <div class="panel-head">
-          <h3 id="comparison-title">מה קרה לתור?</h3>
-          <label>מסלול <select id="rp-chart-path"><option value="0">א׳</option><option value="1">ב׳</option></select></label>
+          <h3 id="comparison-title">How did the queue change?</h3>
+          <label>Path <select id="rp-chart-path"><option value="0">A</option><option value="1">B</option></select></label>
         </div>
-        <div class="chart-legend"><span class="chart-key baseline">בסיס · <bdi>ECMP</bdi></span><span class="chart-key">ניסוי · <bdi id="rp-chart-method"></bdi></span></div>
-        <svg id="rp-chart" class="rp-chart" viewBox="0 0 420 155" role="img" aria-label="אורך התור לפי מחזור"></svg>
+        <div class="chart-legend"><span class="chart-key baseline">Baseline · <bdi>ECMP</bdi></span><span class="chart-key">Trial · <bdi id="rp-chart-method"></bdi></span></div>
+        <svg id="rp-chart" class="rp-chart" viewBox="0 0 420 155" role="img" aria-label="Queue length by cycle"></svg>
         <p id="rp-chart-summary"></p>
-        <p class="fine">כל קו מסתיים כשהחבילה האחרונה באותה הרצה מגיעה.</p>
+        <p class="fine">Each line ends when the last packet arrives in that run.</p>
       </section>
       <section id="rp-tracker" class="analysis-panel" aria-labelledby="track-title" hidden>
-        <div class="panel-head"><h3 id="track-title">מעקב אחרי זרימה</h3>
-          <label id="rp-flow-picker" hidden>הבלטה <select id="rp-flow-filter"><option value="all">כל הזרימות</option><option value="0">זרימה 1</option><option value="1">זרימה 2</option><option value="2">זרימה 3</option><option value="3">זרימה 4</option><option value="4">זרימה 5</option><option value="5">זרימה 6</option></select></label>
+        <div class="panel-head"><h3 id="track-title">Flow tracker</h3>
+          <label id="rp-flow-picker" hidden>Highlight <select id="rp-flow-filter"><option value="all">All flows</option><option value="0">Flow 1</option><option value="1">Flow 2</option><option value="2">Flow 3</option><option value="3">Flow 4</option><option value="4">Flow 5</option><option value="5">Flow 6</option></select></label>
         </div>
         <p id="rp-track-status"></p>
         <ol id="rp-timeline" class="timeline"></ol>
       </section>
       <div id="rp-scores" class="scores"></div>
-      <details id="rp-flow-details" class="flow-details"><summary>זמן השלמה של כל זרימה</summary><div id="rp-flow-progress"></div></details>
+      <details id="rp-flow-details" class="flow-details"><summary>Flow completion times</summary><div id="rp-flow-progress"></div></details>
     </section>
   </div>
   <footer class="page-footer">
     <details>
-      <summary>מה המודל מדמה?</summary>
-      <p>בכל הרצה מתחילות זרימות חדשות. כל שולח מייצר חבילה במחזור וכל קישור פעיל מעביר חבילה במחזור. בניסוי התיקון שומרים על תנאי הרצת הבסיס ומחליפים רק את מדיניות הניתוב.</p>
-      <p>המתגים מסמנים גודש כשהתור מגיע לארבע חבילות. המשוב חוזר באיחור והשולח בודק אותו בחלונות זמן. המודל מפשט את עדכוני הבקר, בקרת הקצב, אובדן חבילות ושינוי סדר הגעתן. זמני הסיום הם תוצאות הסימולציה.</p>
+      <summary>What does the model simulate?</summary>
+      <p>Each run starts with new flows. A sender produces one packet per cycle, and each active link forwards one packet per cycle. Trials use the same network conditions as the slow baseline, with a different routing policy.</p>
+      <p>A switch marks congestion when its queue reaches four packets. Feedback takes time to return, and the sender checks it in time windows. The model simplifies controller updates, rate control, packet loss, and packet reordering. Completion times come from the simulation.</p>
     </details>
   </footer>
   </section>
