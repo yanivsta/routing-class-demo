@@ -89,46 +89,61 @@
     </header>
     <div class="exercise-layout">
       <figure class="exercise-figure">
-        <svg class="exercise-diagram" viewBox="0 0 516 208" role="img" aria-labelledby="exercise-diagram-title exercise-diagram-desc">
-          <title id="exercise-diagram-title">Four uplinks and three links into the destination</title>
-          <desc id="exercise-diagram-desc">Uplinks A and B meet at S2₀. Uplink C reaches S2₁. Uplink D reaches S2₂. Each upper-stage switch has one link carrying traffic to the destination.</desc>
-          <text x="20" y="16" class="diagram-caption">Source</text>
-          <text x="258" y="16" text-anchor="middle" class="diagram-caption">Upper stage</text>
-          <text x="496" y="16" text-anchor="end" class="diagram-caption">Destination</text>
-          <g fill="none" class="exercise-links">
-            <path class="route-zero" d="M98 87 H123 L151 37 H220"/>
-            <path class="route-zero" d="M98 95 H145 L173 60 H220"/>
-            <path class="route-one" d="M98 108 H220"/>
-            <path class="route-two" d="M98 121 H137 L181 168 H220"/>
-            <path class="route-zero" id="exercise-shared-link" d="M296 48 H344 L386 88 H418"/>
-            <path class="route-one" d="M296 108 H418"/>
-            <path class="route-two" d="M296 168 H354 L391 125 H418"/>
+        <svg class="exercise-diagram" viewBox="0 0 600 357" role="img" aria-labelledby="exercise-diagram-title exercise-diagram-desc">
+          <title id="exercise-diagram-title">Two-stage Clos topology from WCMP Figure 2(a)</title>
+          <desc id="exercise-diagram-desc">Three S2 switches above three S1 switches and host groups. Traffic travels up from S1₀ through the S2 layer and down to S1₂.</desc>
+          <defs>
+            <marker id="exercise-arrowhead" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0 0 L9 4.5 L0 9 Z" fill="#172d31"/>
+            </marker>
+          </defs>
+          <g class="exercise-physical-links" fill="none">
+            <path d="M118 71 V235 M132 71 V235 M293 71 V235 M307 71 V235 M468 71 V235 M482 71 V235"/>
+            <path d="M125 71 L300 235 M125 71 L475 235 M300 71 L125 235 M300 71 L475 235 M475 71 L125 235 M475 71 L300 235"/>
+          </g>
+          <g class="exercise-host-links" fill="none">
+            <path d="M125 278 V303 M300 278 V303 M475 278 V303"/>
           </g>
           <g class="exercise-switches">
-            <rect x="20" y="67" width="78" height="77" rx="8"/>
-            <rect x="220" y="29" width="76" height="38" rx="8"/>
-            <rect x="220" y="89" width="76" height="38" rx="8"/>
-            <rect x="220" y="149" width="76" height="38" rx="8"/>
-            <rect x="418" y="67" width="78" height="77" rx="8"/>
-            <text x="59" y="109">S1₀</text>
-            <text x="258" y="52">S2₀</text>
-            <text x="258" y="112">S2₁</text>
-            <text x="258" y="172">S2₂</text>
-            <text x="457" y="109">S1₂</text>
+            <rect class="upper-switch" x="72" y="25" width="106" height="46" rx="6"/>
+            <rect class="upper-switch" x="247" y="25" width="106" height="46" rx="6"/>
+            <rect class="upper-switch" x="422" y="25" width="106" height="46" rx="6"/>
+            <text x="125" y="53">S2₀</text><text x="300" y="53">S2₁</text><text x="475" y="53">S2₂</text>
+            <rect class="endpoint-switch" x="72" y="235" width="106" height="43" rx="6"/>
+            <rect x="247" y="235" width="106" height="43" rx="6"/>
+            <rect class="endpoint-switch" x="422" y="235" width="106" height="43" rx="6"/>
+            <text x="125" y="261">S1₀</text><text x="300" y="261">S1₁</text><text x="475" y="261">S1₂</text>
+            <rect x="85" y="294" width="72" height="29" rx="3"/><rect x="89" y="298" width="72" height="29" rx="3"/><rect x="93" y="302" width="72" height="29" rx="3"/>
+            <rect x="260" y="294" width="72" height="29" rx="3"/><rect x="264" y="298" width="72" height="29" rx="3"/><rect x="268" y="302" width="72" height="29" rx="3"/>
+            <rect x="435" y="294" width="72" height="29" rx="3"/><rect x="439" y="298" width="72" height="29" rx="3"/><rect x="443" y="302" width="72" height="29" rx="3"/>
+            <text x="129" y="321">Hosts</text><text x="304" y="321">Hosts</text><text x="479" y="321">Hosts</text>
+            <text class="diagram-caption" x="125" y="348">1.1.3.0/24</text><text class="diagram-caption" x="300" y="348">1.1.2.0/24</text><text class="diagram-caption" x="475" y="348">1.1.1.0/24</text>
+          </g>
+          <g class="exercise-flow-arrows">
+            <path id="exercise-source-arrow" d="M57 298 V245"/>
+            <g data-diagram-drop="a"><path class="exercise-hit-area" d="M109 214 V181"/><path id="exercise-uplink-arrow-a" d="M109 214 V181"/></g>
+            <g data-diagram-drop="b"><path class="exercise-hit-area" d="M139 190 V155"/><path id="exercise-uplink-arrow-b" d="M139 190 V155"/></g>
+            <g data-diagram-drop="c"><path class="exercise-hit-area" d="M162 206 L194 176"/><path id="exercise-uplink-arrow-c" d="M162 206 L194 176"/></g>
+            <g data-diagram-drop="d"><path class="exercise-hit-area" d="M183 219 L220 202"/><path id="exercise-uplink-arrow-d" d="M183 219 L220 202"/></g>
+            <path id="exercise-shared-link" d="M164 78 L209 101"/>
+            <path id="exercise-downlink-arrow-1" d="M323 80 L354 110"/>
+            <path id="exercise-downlink-arrow-2" d="M494 80 V111"/>
           </g>
           <g class="exercise-link-labels">
-            <text id="exercise-link-a" x="185" y="30">A · 3</text>
-            <text id="exercise-link-b" x="196" y="77">B · 3</text>
-            <text id="exercise-link-c" x="181" y="100">C · 3</text>
-            <text id="exercise-link-d" x="196" y="159">D · 3</text>
-            <text id="exercise-downlink-0" x="332" y="39">6 flows</text>
-            <text id="exercise-downlink-1" x="351" y="100">3 flows</text>
-            <text id="exercise-downlink-2" x="328" y="159">3 flows</text>
+            <text id="exercise-source-count" x="52" y="266" text-anchor="end">12</text>
+            <text x="52" y="284" text-anchor="end">flows</text>
+            <text id="exercise-link-a" x="101" y="187" text-anchor="end">3</text>
+            <text id="exercise-link-b" x="147" y="160">3</text>
+            <text id="exercise-link-c" x="195" y="169">3</text>
+            <text id="exercise-link-d" x="226" y="205">3</text>
+            <text id="exercise-downlink-0" x="216" y="100">6</text>
+            <text id="exercise-downlink-1" x="362" y="108">3</text>
+            <text id="exercise-downlink-2" x="503" y="106">3</text>
           </g>
         </svg>
-        <figcaption>Links used by these flows from <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=2" target="_blank" rel="noopener">WCMP Figure 2(a)</a>. The numbers next to links show flow counts.</figcaption>
+        <figcaption>Topology from <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=2" target="_blank" rel="noopener">WCMP Figure 2(a)</a>. Dashed lines show physical links. Arrows show the direction and number of flows.</figcaption>
         <dl class="exercise-metrics" aria-label="Current allocation">
-          <div><dt>Flows assigned</dt><dd>12 / 12</dd></div>
+          <div><dt>Flows assigned</dt><dd id="exercise-assigned">12 / 12</dd></div>
           <div><dt>Slowest flow</dt><dd id="exercise-rate">1.67 Gb/s</dd></div>
         </dl>
       </figure>
@@ -150,15 +165,19 @@
       <section class="exercise-task" id="exercise-allocation" aria-labelledby="exercise-allocation-title" hidden>
         <p class="eyebrow">Step 2 of 2</p>
         <h3 id="exercise-allocation-title" tabindex="-1">Help the slowest flow</h3>
-        <p>Move one flow at a time. Select an uplink to take a flow from, then select an uplink to receive it. Watch how the loads into the destination and the slowest flow’s rate change.</p>
-        <div class="exercise-uplinks" aria-label="Choose an uplink">
-          <button type="button" data-uplink="0"><span>Uplink A</span><strong>3</strong><span>to S2₀</span></button>
-          <button type="button" data-uplink="1"><span>Uplink B</span><strong>3</strong><span>to S2₀</span></button>
-          <button type="button" data-uplink="2"><span>Uplink C</span><strong>3</strong><span>to S2₁</span></button>
-          <button type="button" data-uplink="3"><span>Uplink D</span><strong>3</strong><span>to S2₂</span></button>
+        <p>Drag all 12 flows from the bank to the uplink arrows or the cards below. You can also select a flow and then select a card. Watch the arrows change as you move flows.</p>
+        <div class="exercise-drop-zone exercise-bank" data-drop-zone="bank">
+          <button class="exercise-drop-label" type="button" data-place="bank">Flow bank <strong data-count>12</strong></button>
+          <div class="exercise-tokens" data-tokens></div>
+        </div>
+        <div class="exercise-uplinks" aria-label="Source uplinks">
+          <div class="exercise-drop-zone" data-drop-zone="a"><button class="exercise-drop-label" type="button" data-place="a">A · S2₀ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+          <div class="exercise-drop-zone" data-drop-zone="b"><button class="exercise-drop-label" type="button" data-place="b">B · S2₀ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+          <div class="exercise-drop-zone" data-drop-zone="c"><button class="exercise-drop-label" type="button" data-place="c">C · S2₁ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+          <div class="exercise-drop-zone" data-drop-zone="d"><button class="exercise-drop-label" type="button" data-place="d">D · S2₂ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
         </div>
         <p id="exercise-move-status" class="fine" aria-live="polite"></p>
-        <button class="button subtle" id="exercise-reset" type="button">Reset allocation</button>
+        <button class="button subtle" id="exercise-reset" type="button">Return all flows to the bank</button>
         <div class="exercise-feedback success" id="exercise-success" role="status" hidden>
           <strong>Each destination link now carries four flows.</strong>
           <p>Each flow gets 2.5 Gb/s in this model. Uplinks A and B share one downstream link, so their total matters. The paper illustrates WCMP’s 1:1:2:2 hashing weights with a split of 2, 2, 4, 4.</p>
