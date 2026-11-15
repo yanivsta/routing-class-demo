@@ -56,7 +56,14 @@ h1 { font-size: clamp(2.45rem, 5.5vw, 4.25rem); line-height: 1.03; letter-spacin
 .reading-excerpts li + li { margin-block-start: .9rem; }
 .reading-excerpts p { margin-block: .18rem .25rem; }
 .reading-excerpts a { font-weight: 700; font-size: .9rem; }
-.ecn-note { background: var(--soft); border-radius: 9px; padding: .7rem .8rem; margin-block-start: 1rem; }
+.reading-choice { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; align-items: start; }
+.reading-choice > details > summary { padding-block: .4rem; }
+.reading-check { display: inline-flex; align-items: center; gap: .35rem; min-height: 36px; padding-inline: .45rem; border: 1px solid var(--line); border-radius: 7px; background: #f4f8f6; cursor: pointer; font-size: .85rem; }
+.reading-check input { accent-color: var(--accent); margin: 0; }
+.reading-check:has(input:checked) { background: var(--soft); border-color: var(--accent); }
+.reading-check-all { margin-block: .2rem .35rem; }
+.reading-ecn-choice { margin-block-start: 1rem; }
+.ecn-note { background: var(--soft); border-radius: 9px; padding: .3rem .65rem; }
 .ecn-note p { margin-block-start: .45rem; }
 .reading-guide > .button { justify-self: start; }
 #reading, #start-simulation, #rp-heading { scroll-margin-block-start: 6rem; }

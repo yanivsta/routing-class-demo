@@ -43,6 +43,7 @@
 .exercise-complete { border: 2px solid var(--accent); padding: .9rem; scroll-margin-block-start: 8rem; }
 .exercise-complete h4 { margin: 0; font-size: 1.15rem; }
 .exercise-complete .exercise-next { margin-block-start: .7rem; }
+.exercise-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 .exercise-uplinks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; }
 .exercise-drop-zone { min-width: 0; padding: .45rem; border: 1px dashed #8ba89e; border-radius: 8px; background: #fcfdfc; }
 .exercise-drop-zone.drop-target { border-color: var(--accent); background: var(--soft); outline: 2px solid var(--accent); outline-offset: -2px; }

@@ -172,10 +172,38 @@
     find('allocation-title').focus();
   });
 
-  find('reset').addEventListener('click', () => {
+  function showDiagnosis() {
+    find('diagnosis').hidden = false;
+    find('allocation').hidden = true;
+    updateDiagram([3, 3, 3, 3], false);
+    find('shared-link').classList.toggle('bottleneck', !find('continue').hidden);
+  }
+
+  find('back').addEventListener('click', () => {
+    selected = null;
+    showDiagnosis();
+    find('question').focus();
+  });
+
+  function resetAllocation() {
+    if (drag) endDrag({ pointerId: drag.pointerId }, true);
     placements.fill('bank');
     selected = null;
     updateAllocation();
+  }
+
+  find('reset').addEventListener('click', () => {
+    resetAllocation();
     find('move-status').textContent = 'All 12 flows are back in the bank.';
+  });
+
+  document.getElementById('rp-reset-activity').addEventListener('click', () => {
+    find('answer').reset();
+    find('feedback').hidden = true;
+    find('feedback').textContent = '';
+    find('continue').hidden = true;
+    find('move-status').textContent = '';
+    resetAllocation();
+    showDiagnosis();
   });
 })();

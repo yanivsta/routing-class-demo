@@ -48,8 +48,8 @@
 
   document.getElementById('rp-reset-activity').addEventListener('click', () => {
     clearFragment();
-    showSection('simulation-panel');
-    document.getElementById('start-simulation').focus();
+    if (active === 'simulation-panel') document.getElementById('start-simulation').focus();
+    if (active === 'wcmp-exercise') document.getElementById('exercise-title').focus();
   });
 
   window.addEventListener('hashchange', syncFromHash);

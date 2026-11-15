@@ -21,61 +21,75 @@
   </header>
 
   <nav class="activity-tabs" aria-label="Activity sections">
-    <button id="reading-tab" type="button" aria-controls="reading" aria-expanded="false">Pre-reading</button>
+    <button id="reading-tab" type="button" aria-controls="reading" aria-expanded="false">Pre-reading (15 min)</button>
     <button id="exercise-tab" type="button" aria-controls="wcmp-exercise" aria-expanded="false">WCMP Exercise</button>
-    <button id="simulation-tab" type="button" aria-controls="simulation-panel" aria-expanded="false">Simulation and Questions</button>
+    <button id="simulation-tab" type="button" aria-controls="simulation-panel" aria-expanded="false">Simulation and Questions (20 min)</button>
     <button id="rp-reset-activity" class="reset-activity" type="button">Restart activity</button>
   </nav>
 
   <section class="reading-guide" id="reading" aria-labelledby="reading-tab" hidden>
-    <h2 id="reading-title">Read before you run <span class="reading-time">(13 min)</span></h2>
+    <h2 id="reading-title">Read before you run <span class="reading-time">(15 min)</span></h2>
     <p>Read the short excerpts in order. PDF page numbers start at the first page of the file. Count lines from the start of the specified paragraph.</p>
     <div class="reading-papers">
-      <details class="reading-paper">
-        <summary>WCMP <span class="reading-time">(6 min)</span></summary>
+      <details class="reading-paper" data-reading-paper="wcmp">
+        <summary>WCMP <span class="reading-time">(7 min)</span></summary>
         <div class="reading-content">
+        <label class="reading-check reading-check-all"><input type="checkbox" data-read-all> Mark all WCMP sections as read</label>
         <ol class="reading-excerpts">
-          <li><details class="reading-section">
+          <li><div class="reading-choice"><details class="reading-section">
             <summary>The problem <span class="reading-time">(4 min)</span></summary>
             <div class="reading-content">
             <p>PDF page 1, Abstract. Read both paragraphs in full: lines 1–12 of paragraph 1 and lines 1–11 of paragraph 2.</p>
             <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=1" target="_blank" rel="noopener">Open WCMP, PDF page 1</a></div>
-          </details></li>
-          <li><details class="reading-section">
-            <summary>The proposed solution <span class="reading-time">(2 min)</span></summary>
+          </details>
+            <label class="reading-check"><input type="checkbox" data-read-item="wcmp-problem" aria-label="Mark the WCMP problem section as read"> Read</label>
+          </div></li>
+          <li><div class="reading-choice"><details class="reading-section">
+            <summary>The proposed solution <span class="reading-time">(3 min)</span></summary>
             <div class="reading-content">
             <p>PDF page 4, Section 3.1, paragraph 2, lines 1–7. Start at “To implement weighted hashing” and stop after “associated with that egress port.”</p>
             <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">Open WCMP, PDF page 4</a></div>
-          </details></li>
+          </details>
+            <label class="reading-check"><input type="checkbox" data-read-item="wcmp-solution" aria-label="Mark the WCMP solution section as read"> Read</label>
+          </div></li>
         </ol></div>
       </details>
-      <details class="reading-paper">
-        <summary>FlowBender <span class="reading-time">(7 min)</span></summary>
+      <details class="reading-paper" data-reading-paper="flowbender">
+        <summary>FlowBender <span class="reading-time">(8 min)</span></summary>
         <div class="reading-content">
+        <label class="reading-check reading-check-all"><input type="checkbox" data-read-all> Mark all FlowBender sections as read</label>
         <ol class="reading-excerpts">
-          <li><details class="reading-section">
+          <li><div class="reading-choice"><details class="reading-section">
             <summary>The problem <span class="reading-time">(2 min)</span></summary>
             <div class="reading-content">
             <p>PDF page 1, Abstract, paragraph 1, lines 1–8. Start at “Datacenter networks provide” and stop after “degrading performance of other flows as well.”</p>
             <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=1" target="_blank" rel="noopener">Open FlowBender, PDF page 1</a></div>
-          </details></li>
-          <li><details class="reading-section">
-            <summary>Two ways to compare approaches <span class="reading-time">(1 min)</span></summary>
+          </details>
+            <label class="reading-check"><input type="checkbox" data-read-item="flowbender-problem" aria-label="Mark the FlowBender problem section as read"> Read</label>
+          </div></li>
+          <li><div class="reading-choice"><details class="reading-section">
+            <summary>Two ways to compare approaches <span class="reading-time">(2 min)</span></summary>
             <div class="reading-content">
             <p>PDF page 2, Introduction, paragraph 3 (the first on this page), lines 1–5. Start at “The solution space for load balancing” and stop after “in a given flow.”</p>
             <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a></div>
-          </details></li>
-          <li><details class="reading-section">
+          </details>
+            <label class="reading-check"><input type="checkbox" data-read-item="flowbender-comparison" aria-label="Mark the FlowBender comparison section as read"> Read</label>
+          </div></li>
+          <li><div class="reading-choice"><details class="reading-section">
             <summary>The proposed solution <span class="reading-time">(3 min)</span></summary>
             <div class="reading-content">
             <p>PDF page 2, Introduction, paragraph 4 (the second on this page), lines 1–11. Start at “We propose FlowBender” and stop after “selectively re-routed.”</p>
             <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a></div>
-          </details></li>
+          </details>
+            <label class="reading-check"><input type="checkbox" data-read-item="flowbender-solution" aria-label="Mark the FlowBender solution section as read"> Read</label>
+          </div></li>
         </ol>
-        <details class="ecn-note reading-section">
+        <div class="reading-choice reading-ecn-choice"><details class="ecn-note reading-section">
           <summary>How FlowBender uses ECN <span class="reading-time">(1 min)</span></summary>
           <p>A congested switch can mark a packet using Explicit Congestion Notification (ECN). The receiver echoes the congestion signal in its acknowledgment, so the sender learns that the packet encountered congestion along the path. If the fraction of acknowledgments reporting congestion exceeds a threshold, the sender changes a packet header value that the switches use for hashing. Subsequent packets in the same flow may then take a different path.</p>
-        </details></div>
+        </details>
+          <label class="reading-check"><input type="checkbox" data-read-item="flowbender-ecn" aria-label="Mark the ECN explanation as read"> Read</label>
+        </div></div>
       </details>
     </div>
     <a class="button primary" href="#wcmp-exercise" data-open-section="wcmp-exercise">Start the WCMP exercise</a>
@@ -149,7 +163,7 @@
       </figure>
       <section class="exercise-task" id="exercise-diagnosis" aria-labelledby="exercise-question">
         <p class="eyebrow">Step 1 of 2</p>
-        <h3 id="exercise-question">Why do some flows get less bandwidth?</h3>
+        <h3 id="exercise-question" tabindex="-1">Why do some flows get less bandwidth?</h3>
         <form id="exercise-answer">
           <fieldset>
             <legend class="sr-only">Choose the explanation that fits the diagram</legend>
@@ -185,7 +199,10 @@
           <div class="exercise-drop-zone" data-drop-zone="d"><button class="exercise-drop-label" type="button" data-place="d">D · S2₂ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
         </div>
         <p id="exercise-move-status" class="fine" aria-live="polite"></p>
-        <button class="button subtle" id="exercise-reset" type="button">Return all flows to the bank</button>
+        <div class="exercise-actions">
+          <button class="button subtle" id="exercise-back" type="button">Back to diagnosis</button>
+          <button class="button subtle" id="exercise-reset" type="button">Return all flows to the bank</button>
+        </div>
       </section>
     </div>
   </section>
@@ -294,5 +311,6 @@
 </main>
 <script src="tabs.js"></script>
 <script src="exercise.js"></script>
+<script src="reading.js"></script>
 </body>
 </html>
