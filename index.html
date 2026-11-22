@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A routing lab comparing ECMP, WCMP, and FlowBender across two network scenarios.">
   <title>Routing Lab | Class Preparation</title>
-  <link rel="stylesheet" href="lab.css?v=2">
+  <link rel="stylesheet" href="lab.css?v=3">
   <link rel="stylesheet" href="exercise.css">
-  <script defer src="lab.js?v=2"></script>
+  <script defer src="lab.js?v=3"></script>
 </head>
 <body>
 <main id="routing-classroom-activity" class="page">
@@ -17,6 +17,7 @@
       <h1>Routing Lab</h1>
       <p class="intro">Two jobs are running slowly. What changed in the network, and how should we respond?</p>
       <p class="intro intro-secondary">Observe each run, explain the slowdown, and test a routing policy. Compare how long it takes the last flow to finish.</p>
+      <p class="ai-study-note">We encourage you to use AI as a discussion partner while preparing. Ask it to explain unfamiliar concepts, discuss the readings, and challenge your interpretation of the simulation.</p>
     </div>
   </header>
 
@@ -215,6 +216,78 @@
     <h2 id="simulation-intro-title" tabindex="-1">How to use the simulation</h2>
     <p>The numbered hosts on the left send packets to one receiver on the right. Packets travel along two paths, A and B. Color and number identify each flow. The diagram shows each path’s capacity and the packets waiting in its queue.</p>
     <p>In each case, run the healthy network first, then see what changes. Use the diagram to diagnose the slowdown. Predict what a routing policy will do, test it, and compare how many cycles it takes for the last packet to arrive. Answer the review questions and bring one observation to class.</p>
+    <details class="visual-guide">
+      <summary>Visual guide to the simulation</summary>
+      <div class="visual-guide-grid">
+        <figure class="guide-card">
+          <svg class="guide-image guide-network" viewBox="0 0 340 150" role="img" aria-label="Numbered colored senders on the left send matching data packets to one receiver on the right">
+            <path d="M40 42 L130 75 H295 M40 75 H130 M40 108 L130 75" class="guide-wire"/>
+            <circle cx="40" cy="42" r="12" fill="#63e6a5"/><circle cx="40" cy="75" r="12" fill="#ffa261"/><circle cx="40" cy="108" r="12" fill="#91afff"/>
+            <g class="guide-packet-number"><text x="40" y="46">1</text><text x="40" y="79">2</text><text x="40" y="112">3</text></g>
+            <circle cx="176" cy="75" r="9" fill="#63e6a5"/><circle cx="213" cy="75" r="9" fill="#ffa261"/>
+            <g class="guide-packet-number"><text x="176" y="79">1</text><text x="213" y="79">2</text></g>
+            <circle cx="295" cy="75" r="12" fill="#294e50" stroke="#a0bdba"/>
+            <text x="52" y="139">Senders</text><text x="210" y="53">Data</text><text x="291" y="111">Receiver</text>
+          </svg>
+          <figcaption><h3>Senders and data packets</h3><p>Numbered hosts on the left send data to one receiver on the right, with each packet’s number and color identifying its flow.</p></figcaption>
+        </figure>
+        <figure class="guide-card">
+          <svg class="guide-image guide-network" viewBox="0 0 340 150" role="img" aria-label="Three solid parallel links give a capacity of three packets per cycle; one solid and two dashed links give a capacity of one">
+            <text x="170" y="23">Parallel links within a path</text>
+            <g stroke="#eef8f3" stroke-width="2"><path d="M55 45 H285 M55 55 H285 M55 65 H285"/><path d="M55 105 H285"/></g>
+            <path d="M55 115 H285 M55 125 H285" stroke="#a0bdba" stroke-width="2" stroke-dasharray="4 5"/>
+            <text x="170" y="86">Capacity 3</text><text x="170" y="146">Capacity 1</text>
+          </svg>
+          <figcaption><h3>Links and capacity</h3><p>Paths A and B each contain parallel links, and every solid link can forward one packet per cycle while a dashed link is down.</p></figcaption>
+        </figure>
+        <figure class="guide-card">
+          <svg class="guide-image guide-network" viewBox="0 0 340 150" role="img" aria-label="Colored blocks represent queued packets, and a white outline identifies a data packet marked for congestion">
+            <text x="88" y="32">Waiting packets</text>
+            <g fill="#63e6a5"><rect x="45" y="52" width="13" height="11"/><rect x="63" y="52" width="13" height="11"/><rect x="81" y="52" width="13" height="11"/></g>
+            <g fill="#ffa261"><rect x="99" y="52" width="13" height="11"/><rect x="117" y="52" width="13" height="11"/><rect x="45" y="69" width="13" height="11"/></g>
+            <g fill="#91afff"><rect x="63" y="69" width="13" height="11"/><rect x="81" y="69" width="13" height="11"/><rect x="99" y="69" width="13" height="11"/></g>
+            <text x="88" y="108">Queued 9</text>
+            <path d="M165 63 H297" class="guide-wire"/>
+            <rect x="157" y="55" width="16" height="16" fill="#294e50" stroke="#a0bdba"/>
+            <circle cx="248" cy="63" r="10" fill="#ffa261" stroke="#eef8f3" stroke-width="3"/>
+            <text x="248" y="67" class="guide-packet-number">2</text>
+            <text x="244" y="108">ECN-marked data</text>
+          </svg>
+          <figcaption><h3>Queues and ECN marks</h3><p>Colored blocks show waiting packets, and the switch marks data packets with ECN when the queue reaches the congestion threshold, shown by a white outline.</p></figcaption>
+        </figure>
+        <figure class="guide-card">
+          <svg class="guide-image guide-network" viewBox="0 0 340 150" role="img" aria-label="A receiver echoes ECN congestion information in a gold ACK packet returning left toward the sender">
+            <text x="49" y="29">Sender</text><text x="287" y="29">Receiver</text>
+            <circle cx="49" cy="55" r="12" fill="#63e6a5"/><text x="49" y="59" class="guide-packet-number">1</text>
+            <circle cx="287" cy="55" r="12" fill="#294e50" stroke="#a0bdba"/>
+            <path d="M65 55 H269" class="guide-wire"/><path d="M259 50 L269 55 L259 60" fill="none" stroke="#a0bdba"/>
+            <circle cx="183" cy="55" r="9" fill="#63e6a5" stroke="#eef8f3" stroke-width="3"/>
+            <path d="M287 73 V108 H49" stroke="#ffd17a" fill="none" stroke-dasharray="4 5"/><path d="M58 102 L49 108 L58 114" fill="none" stroke="#ffd17a" stroke-width="2"/>
+            <g transform="translate(166 108)"><rect x="-25" y="-10" width="50" height="20" rx="5" fill="#ffd17a"/><text x="-5" y="4" class="guide-ack-label">ACK</text><circle cx="15" cy="0" r="7" fill="#63e6a5"/><text x="15" y="3" class="guide-ack-number">1</text></g>
+            <text x="170" y="141" class="guide-ecn-label">ECN feedback to sender</text>
+          </svg>
+          <figcaption><h3>ECN feedback and FlowBender</h3><p>Gold ACK packets carry ECN feedback from the receiver to each sender, and FlowBender uses the fraction reporting congestion to decide when to try a new hash input.</p></figcaption>
+        </figure>
+        <figure class="guide-card">
+          <svg class="guide-image" viewBox="0 0 340 150" role="img" aria-label="Example queue graph with cycles on the horizontal axis and queued packets on the vertical axis, using a dashed baseline and solid trial line">
+            <path d="M46 24 V112 H312" fill="none" stroke="#adc2b9"/>
+            <path d="M46 105 L104 68 L160 35 L234 59 L306 112" fill="none" stroke="#526666" stroke-width="2" stroke-dasharray="5 4"/>
+            <path d="M46 105 L104 86 L160 74 L212 112" fill="none" stroke="#087b60" stroke-width="3"/>
+            <text x="164" y="138">Cycles</text><text x="53" y="16" text-anchor="start">Queued packets</text>
+            <text x="253" y="35">Baseline</text><text x="240" y="85" fill="#087b60">Trial</text>
+          </svg>
+          <figcaption><h3>Queue graph</h3><p>After a trial, compare the queue over time with the dashed ECMP baseline and use the path selector to inspect either path.</p></figcaption>
+        </figure>
+        <figure class="guide-card">
+          <svg class="guide-image" viewBox="0 0 340 150" role="img" aria-label="Results table with policy and cycles columns, showing an ECMP baseline row and a tested policy row">
+            <path d="M25 52 H315 M25 89 H315 M25 126 H315" stroke="#d6e1db"/>
+            <g text-anchor="start"><text x="32" y="37">Policy</text><text x="32" y="77">ECMP</text><text x="32" y="114">Tested policy</text></g>
+            <g text-anchor="end"><text x="304" y="37">Cycles</text><text x="304" y="77">…</text><text x="304" y="114">…</text></g>
+          </svg>
+          <figcaption><h3>Completion-time table</h3><p>The table below each trial compares cycles until all packets arrive for every policy you have run in that case, with fewer cycles meaning a faster finish.</p></figcaption>
+        </figure>
+      </div>
+    </details>
   </section>
   <nav class="journey" id="start-simulation" tabindex="-1" aria-label="Activity progress">
     <ol class="journey-cases">
@@ -279,7 +352,8 @@
           <svg id="rp-network" class="rp-network" role="img" aria-label="Senders, two paths, packets, capacities, and queues"></svg>
         </div>
         <div class="diagram-status" id="rp-clock"></div>
-        <p class="diagram-key">A flow’s number and color identify its packets. Dashed links are down. A thick white outline marks congestion.</p>
+        <p class="diagram-key">Numbered colored circles are data packets. Dashed links are down. A white outline means the switch marked a data packet with ECN.</p>
+        <p class="diagram-key feedback-key"><span class="ack-key" aria-hidden="true">ACK</span> Gold ACKs return ECN feedback to senders. FlowBender uses this feedback to decide when to try rerouting.</p>
       </div>
       <div id="rp-event" class="event" aria-live="polite" hidden></div>
       <a href="#rp-heading" id="rp-return" class="button subtle return-link" hidden>Continue the activity ↑</a>
@@ -313,7 +387,7 @@
     <details>
       <summary>What does the model simulate?</summary>
       <p>Each run starts with new flows. A sender produces one packet per cycle, and each active link forwards one packet per cycle. Trials use the same network conditions as the slow baseline, with a different routing policy.</p>
-      <p>A switch marks congestion when its queue reaches four packets. Feedback takes time to return, and the sender checks it in time windows. The model simplifies controller updates, rate control, packet loss, and packet reordering. Completion times come from the simulation.</p>
+      <p>A switch marks data packets with ECN when its queue reaches four packets. The receiver echoes ECN in acknowledgments (ACKs), and the sender checks the fraction reporting congestion in time windows. The animation shows the ACKs that report congestion. The model simplifies controller updates, rate control, packet loss, and packet reordering. Completion times come from the simulation.</p>
     </details>
   </footer>
   </section>

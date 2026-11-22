@@ -46,7 +46,7 @@
           f.marked++;
           if(!f.feedbackSeen){
             f.feedbackSeen=true;
-            f.events.push({cycle:this.t,label:'A congestion-marked acknowledgment reached the sender.'});
+            f.events.push({cycle:this.t,label:'An ACK carrying ECN congestion feedback reached the sender.'});
           }
         }
       }
@@ -59,7 +59,7 @@
             f.events.push({cycle:this.t,label:old===f.path
               ? `${percentage}% of acknowledgments in this window reported congestion. The sender changed the hash input, and the switch selected path ${path}.`
               : `${percentage}% of acknowledgments in this window reported congestion. The sender changed the hash input, and new packets now take path ${path}.`});
-            if(old!==f.path){this.moves++;this.event=`Flow ${f.id+1}: After congestion feedback, new packets take path ${f.path?'B':'A'}.`;}
+            if(old!==f.path){this.moves++;this.event=`Flow ${f.id+1}: After ECN feedback, new packets take path ${f.path?'B':'A'}.`;}
           }
           f.samples=0;f.marked=0;
         }
@@ -72,7 +72,7 @@
           const f=this.flows[p.flow];
           if(marked&&!f.markedSeen){
             f.markedSeen=true;
-            f.events.push({cycle:this.t,label:`The switch on path ${path?'B':'A'} marked a packet for congestion.`});
+            f.events.push({cycle:this.t,label:`The switch on path ${path?'B':'A'} marked a data packet with ECN.`});
           }
           this.flights.push({...p,lane:k,phase:'out',start:this.t,end:this.t+4,marked:p.marked||marked});
         }
@@ -507,12 +507,12 @@
   }
   function draw(alpha=0) {
     const svg=$('network'),w=Math.max(300,svg.clientWidth||680),sig=[w,...model.caps,model.flows.length].join(':');
-    const sx=22,split=w*.22,mid=w*.46,merge=w*.75,dx=w-22,cy=150,ys=[68,232];
+    const sx=22,split=w*.22,mid=w*.46,merge=w*.75,dx=w-22,cy=150,ys=[68,232],feedbackY=332;
     if(!view||view.sig!==sig) {
-      svg.setAttribute('viewBox',`0 0 ${w} 324`);
+      svg.setAttribute('viewBox',`0 0 ${w} 404`);
       svg.innerHTML='';
       const text=(x,y,label)=>{const n=make('text',{x,y,'text-anchor':'middle'},svg);n.textContent=label;return n;};
-      const title=make('title',{},svg);title.textContent='Two paths. The number of active links is the path’s capacity in packets per cycle.';
+      const title=make('title',{},svg);title.textContent='Colored numbered circles are data packets. Active parallel links determine each path’s capacity. Gold ACK packets return ECN congestion feedback from the receiver to senders.';
       text(sx+8,52,'Senders');text(dx-8,190,'Receiver');
       for(const f of model.flows) {
         const y=96+f.id*22;
@@ -530,16 +530,30 @@
       }
       make('line',{x1:merge,y1:cy,x2:dx,y2:cy,class:'rp-structure'},svg);
       make('circle',{cx:dx,cy:cy,r:9,fill:'var(--muted)',stroke:'var(--border)'},svg);
-      make('line',{x1:dx,y1:298,x2:sx,y2:298,class:'rp-structure','stroke-dasharray':'3 4'},svg);
-      text(w/2,321,'Congestion feedback to senders ←');
+      make('path',{d:`M${dx} ${cy+14} V${feedbackY} H${sx}`,fill:'none',stroke:'#ffd17a','stroke-width':1.5,'stroke-dasharray':'4 5'},svg);
+      make('path',{d:`M${sx+9} ${feedbackY-5} L${sx} ${feedbackY} L${sx+9} ${feedbackY+5}`,fill:'none',stroke:'#ffd17a','stroke-width':2},svg);
+      text(w/2,378,'ECN feedback (ACKs) · receiver to senders').setAttribute('class','ecn-return-label');
+      const feedbackStatus=text(w/2,397,'');
+      feedbackStatus.setAttribute('class','ecn-return-status');
       const pathInfo=ys.map((y,i)=>text((mid+merge)/2,y-46,''));
       const queues=ys.map(y=>({
         cells:Array.from({length:12},(_,i)=>make('rect',{x:mid-28+(i%6)*10,y:y+17+Math.floor(i/6)*9,width:7,height:6,visibility:'hidden'},svg)),
         label:text(mid,y+58,'')
       }));
-      const packets=make('g',{},svg),acks=Array.from({length:12},()=>make('circle',{cy:298,r:4,fill:'var(--viz-series-1)',visibility:'hidden'},svg));
+      const packets=make('g',{},svg);
+      const acks=Array.from({length:12},()=>{
+        const group=make('g',{visibility:'hidden'},svg);
+        const title=make('title',{},group);
+        make('rect',{x:-25,y:-10,width:50,height:20,rx:5,fill:'#ffd17a',stroke:'#fff0d0','stroke-width':1},group);
+        make('path',{d:'M-20 -3 L-23 0 L-20 3',fill:'none',stroke:'#132c30','stroke-width':1.5},group);
+        const label=make('text',{x:-6,y:4,'text-anchor':'middle',class:'ecn-ack-label'},group);
+        label.textContent='ACK';
+        const dot=make('circle',{cx:15,cy:0,r:7},group);
+        const number=make('text',{x:15,y:3.5,'text-anchor':'middle',class:'ecn-ack-number'},group);
+        return {group,title,dot,number};
+      });
       const ring=make('ellipse',{cx:(mid+merge)/2,cy:68,rx:(merge-mid)/2+14,ry:24,fill:'none',stroke:'var(--viz-series-1)','stroke-width':2,visibility:'hidden','pointer-events':'none'},svg);
-      view={sig,w,pathInfo,queues,packets,active:new Map(),free:[],acks,tick:-1,ring};
+      view={sig,w,pathInfo,queues,packets,active:new Map(),free:[],acks,feedbackStatus,tick:-1,ring};
     }
     view.ring.setAttribute('visibility',phase===1&&model.changed&&model.t>=1&&model.t<=12?'visible':'hidden');
     const selected=caseId==='b'?trackedFlow:null;
@@ -580,11 +594,18 @@
     const acks=model.acks.filter(a=>selected===null||a.flow===selected).slice(-12);
     view.acks.forEach((node,i)=>{
       const ack=acks[i];
-      node.setAttribute('visibility',ack?'visible':'hidden');
+      node.group.setAttribute('visibility',ack?'visible':'hidden');
       if(ack){
-        node.setAttribute('fill',colors[ack.flow]);
-        node.setAttribute('cx',dx-(dx-sx)*Math.min(1,(model.t+alpha-ack.start)/4));
+        const x=dx-16-(dx-sx-32)*Math.min(1,(model.t+alpha-ack.start)/4);
+        const y=feedbackY+(ack.flow%3-1)*22;
+        node.group.setAttribute('transform',`translate(${x.toFixed(1)},${y})`);
+        node.dot.setAttribute('fill',colors[ack.flow]);
+        node.number.textContent=String(ack.flow+1);
+        node.title.textContent=`ACK carrying ECN congestion feedback to sender ${ack.flow+1}`;
       }
     });
+    view.feedbackStatus.textContent=model.done?'All data packets delivered.'
+      :acks.length?`Gold ACKs report congestion${selected===null?'':` for flow ${selected+1}`}.`
+      :'No ACKs reporting ECN congestion are visible.';
   }
 })();
