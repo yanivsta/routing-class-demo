@@ -134,7 +134,7 @@ textarea { width: 100%; resize: vertical; }
 .method { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--accent-dark); background: var(--soft); font-weight: 700; border-radius: 7px; padding: .34rem .6rem; font-size: .83rem; }
 .diagram-card { background: #132c30; border-radius: 13px; color: #edf7f2; overflow: hidden; --foreground:#eef8f3; --border:#547a79; --muted:#294e50; --muted-foreground:#a0bdba; --background:#183638; --viz-series-1:#63e6a5; --viz-series-2:#ffa261; --viz-series-3:#91afff; --viz-series-4:#fa95df; --viz-series-5:#f8dc6d; --viz-series-6:#64dcee; }
 .diagram-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .55rem; padding: .7rem; border-bottom: 1px solid #3a5a5c; }
-.transport { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; min-width: 0; }
+.transport { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .35rem; min-width: 0; }
 .deck-button, .run { min-height: 36px; }
 .run { background: #a0ebce; color: #143830; }
 .run:hover:not(:disabled) { background: #c3f8e2; }
@@ -198,7 +198,10 @@ textarea { width: 100%; resize: vertical; }
   .visual-guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rp-network { height: 360px; }
 }
-@media (max-width: 560px) { .visual-guide-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .visual-guide-grid { grid-template-columns: 1fr; }
+  .transport { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 420px) {
   .activity-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .activity-tabs button { padding-inline: .45rem; font-size: .9rem; }

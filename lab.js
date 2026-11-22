@@ -304,6 +304,7 @@
     const playable=mode==='cases'&&(phase<=1||phase===3&&confirmed&&prediction!==null);
     $('play').disabled=!playable||running||model.done;
     $('pause').disabled=!running;
+    $('finish-run').disabled=!playable||model.done;
     $('restart').disabled=mode!=='cases'||!model.t||phase>=2&&phase!==3&&phase!==4;
     $('restart').textContent='Reset run';
     $('play').textContent=running?'Running…':model.t&&!model.done?'Resume':'Run';
@@ -427,6 +428,12 @@
   });
   $('flow-details').addEventListener('toggle',render);
   $('pause').addEventListener('click',()=>{pause();render();});
+  $('finish-run').addEventListener('click',()=>{
+    if($('finish-run').disabled)return;
+    pause();
+    while(!model.done)model.tick();
+    finished();render();
+  });
   function resetActivity(){
     pause();caseId='a';phase=0;sub=0;mode='cases';policy='';confirmed=false;
     records={a:blankCase(),b:blankCase()};results={a:{},b:{}};

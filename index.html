@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A routing lab comparing ECMP, WCMP, and FlowBender across two network scenarios.">
   <title>Routing Lab | Class Preparation</title>
-  <link rel="stylesheet" href="lab.css?v=3">
+  <link rel="stylesheet" href="lab.css?v=4">
   <link rel="stylesheet" href="exercise.css">
-  <script defer src="lab.js?v=3"></script>
+  <script defer src="lab.js?v=4"></script>
 </head>
 <body>
 <main id="routing-classroom-activity" class="page">
@@ -344,6 +344,7 @@
           <div class="transport" aria-label="Run controls">
             <button id="rp-play" type="button" class="button run">Run</button>
             <button id="rp-pause" type="button" class="button deck-button" disabled>Pause</button>
+            <button id="rp-finish-run" type="button" class="button deck-button" title="Fast-forward to the end of this run">Finish run</button>
             <button id="rp-restart" type="button" class="button deck-button">Reset run</button>
           </div>
           <label class="speed">Speed <output id="rp-speed-label" dir="ltr">1×</output><input type="range" id="rp-speed" min=".25" max="2" step=".25" value="1"></label>
