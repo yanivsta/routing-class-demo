@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="דף ליווי לשיעור משותף בן 90 דקות על WCMP ו־FlowBender, עם קריאה מודרכת, הדגמות ודיון.">
+  <title>ניתוב ואיזון עומסים | דף השיעור</title>
+  <link rel="stylesheet" href="exercise.css">
+  <link rel="stylesheet" href="lesson.css?v=1">
+  <script defer src="routing-model.js?v=1"></script>
+  <script defer src="exercise.js"></script>
+  <script defer src="lesson.js?v=1"></script>
+</head>
+<body>
+<a class="skip-link" href="#stage-content">לתוכן השלב</a>
+<header class="lesson-header">
+  <a class="brand" href="#opening"><span lang="en" dir="ltr">UNIT 4 · ROUTING</span><strong>ניתוב ואיזון עומסים</strong></a>
+  <div class="header-actions">
+    <a class="quiet-button" href="./index.html" target="_blank" rel="noopener">ההכנה לבית</a>
+    <button type="button" id="projection" aria-pressed="false">מצב הקרנה</button>
+    <button type="button" id="fullscreen">מסך מלא</button>
+  </div>
+</header>
+<div class="lesson-shell">
+  <aside class="lesson-sidebar">
+    <p class="sidebar-label">מהלך השיעור · 90 דקות</p>
+    <nav id="lesson-nav" aria-label="שלבי השיעור"></nav>
+    <div class="sidebar-question"><p>השאלות שמלוות אותנו</p><strong>איפה מקבלים את ההחלטה?</strong><strong>איזה מידע מאפשר אותה?</strong></div>
+    <details class="navigation-help"><summary>איך עוקבים בשיעור?</summary><p>בחרו בשלב שהמנחים מציגים. כל אחד יכול לחזור לקריאה, להגדיל איורים ולהריץ את ההדגמות בלפטופ שלו.</p><p>מקשי Page Down ו־Page Up עוברים בין השלבים. כפתור העתקת הקישור משתף את השלב הנוכחי.</p></details>
+  </aside>
+  <main id="stage-content" tabindex="-1">
+    <div class="stage-toolbar"><label for="stage-picker">בשלב הזה <select id="stage-picker"></select></label><span id="stage-count"></span><button type="button" id="copy-link">העתקת קישור לשלב</button><span id="copy-status" role="status"></span></div>
+
+    <article class="stage" id="opening" data-title="פתיחה ומטרות" data-minutes="8">
+      <p class="paper-label" lang="en" dir="ltr">WCMP · EuroSys 2014 &nbsp; / &nbsp; FlowBender · CoNEXT 2014</p>
+      <h1>יש קיבולת פנויה.<br>למה העבודה עדיין מחכה?</h1>
+      <p class="lead">מתחילים מההתנסות בבית ומבררים מי רואה את הבעיה, מי מחליט ואיזו פעולה הוא יכול לבצע.</p>
+      <div class="discussion"><p class="block-label">פותחים את הדיון</p><h2>בסימולציה ראיתם את כל הרשת. מה מתוך התמונה הזאת זמין לשולח אמיתי?</h2><p>חשבו על התורים, הקישורים הפעילים, מצב המסלול האחר והזמן שבו המידע מגיע.</p></div>
+      <div class="learning-goals"><h2>בסוף השיעור נוכל</h2><ol><li>לאבחן אי־סימטריה בקיבולת וחלוקת עומס לא מאוזנת.</li><li>למקם את המדידה, ההחלטה והביצוע בכל אחת מהשיטות.</li><li>להצדיק פעולה לפי המידע הזמין ולציין מה עדיין חסר.</li></ol></div>
+      <details><summary>תזכורת למושגים מההכנה</summary><dl class="glossary">
+        <div><dt lang="en" dir="ltr">ECMP</dt><dd>גיבוב שדות בכותרת משייך זרימה ליציאה. השיבוץ נשאר עקבי כשהקלט והגדרות הניתוב קבועים.</dd></div>
+        <div><dt lang="en" dir="ltr">Elephant flows / Mice flows</dt><dd>זרימות גדולות נושאות נפח רב. כשיש מעט זרימות כאלה, התנגשות בגיבוב יכולה להשפיע מאוד על חלוקת הבייטים.</dd></div>
+        <div><dt lang="en" dir="ltr">Fat-tree / Clos</dt><dd>טופולוגיות עם כמה מסלולים בין המקור ליעד. קיבולת המסלול תלויה גם בקישורים שנמצאים בהמשך הדרך.</dd></div>
+        <div><dt lang="en" dir="ltr">Tail latency</dt><dd>זמני ההשלמה בחלק האיטי של ההתפלגות, למשל אחוזון 99. בפעולה שמחכה לכל המשתתפים, זמן ההשלמה נקבע לפי המשתתף האחרון.</dd></div>
+      </dl></details>
+    </article>
+
+    <article class="stage" id="topology" data-title="מתחילים מהטופולוגיה" data-minutes="12" hidden>
+      <p class="paper-label" lang="en" dir="ltr">WCMP · §2.1 · Figure 2 · PDF pp. 2–3</p>
+      <h1>חלוקה שווה ביציאה.<br>קיבולת שווה בהמשך?</h1>
+      <div class="discussion"><p class="block-label">לפני שמחלקים מחדש</p><h2>איזה קישור מגביל את הזרימות, ואיזה מידע צריך כדי לגלות זאת במתג המקור?</h2></div>
+        <section id="wcmp-exercise" class="wcmp-exercise" aria-labelledby="exercise-title" dir="ltr">
+    <header>
+      <p class="eyebrow">WCMP · Figure 2(a)</p>
+      <h2 id="exercise-title" tabindex="-1">Follow the 12 flows</h2>
+      <p>Twelve flows travel from the source switch to the same destination. Every link shown has a capacity of 10 Gb/s. At the start, ECMP assigns three flows to each of the source switch’s four uplinks.</p>
+    </header>
+    <div class="exercise-layout">
+      <figure class="exercise-figure">
+        <svg class="exercise-diagram" viewBox="0 0 600 357" role="img" aria-labelledby="exercise-diagram-title exercise-diagram-desc">
+          <title id="exercise-diagram-title">Two-stage Clos topology from WCMP Figure 2(a)</title>
+          <desc id="exercise-diagram-desc">Three S2 switches above three S1 switches and host groups. Traffic travels up from S1₀ through the S2 layer and down to S1₂.</desc>
+          <defs>
+            <marker id="exercise-arrowhead" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0 0 L9 4.5 L0 9 Z" fill="#172d31"/>
+            </marker>
+          </defs>
+          <g class="exercise-physical-links" fill="none">
+            <path d="M118 71 V235 M132 71 V235 M293 71 V235 M307 71 V235 M468 71 V235 M482 71 V235"/>
+            <path d="M125 71 L300 235 M125 71 L475 235 M300 71 L125 235 M300 71 L475 235 M475 71 L125 235 M475 71 L300 235"/>
+          </g>
+          <g class="exercise-host-links" fill="none">
+            <path d="M125 278 V303 M300 278 V303 M475 278 V303"/>
+          </g>
+          <g class="exercise-switches">
+            <rect class="upper-switch" x="72" y="25" width="106" height="46" rx="6"/>
+            <rect class="upper-switch" x="247" y="25" width="106" height="46" rx="6"/>
+            <rect class="upper-switch" x="422" y="25" width="106" height="46" rx="6"/>
+            <text x="125" y="53">S2₀</text><text x="300" y="53">S2₁</text><text x="475" y="53">S2₂</text>
+            <rect class="endpoint-switch" x="72" y="235" width="106" height="43" rx="6"/>
+            <rect x="247" y="235" width="106" height="43" rx="6"/>
+            <rect class="endpoint-switch" x="422" y="235" width="106" height="43" rx="6"/>
+            <text x="125" y="261">S1₀</text><text x="300" y="261">S1₁</text><text x="475" y="261">S1₂</text>
+            <rect x="85" y="294" width="72" height="29" rx="3"/><rect x="89" y="298" width="72" height="29" rx="3"/><rect x="93" y="302" width="72" height="29" rx="3"/>
+            <rect x="260" y="294" width="72" height="29" rx="3"/><rect x="264" y="298" width="72" height="29" rx="3"/><rect x="268" y="302" width="72" height="29" rx="3"/>
+            <rect x="435" y="294" width="72" height="29" rx="3"/><rect x="439" y="298" width="72" height="29" rx="3"/><rect x="443" y="302" width="72" height="29" rx="3"/>
+            <text x="129" y="321">Hosts</text><text x="304" y="321">Hosts</text><text x="479" y="321">Hosts</text>
+            <text class="diagram-caption" x="125" y="348">1.1.3.0/24</text><text class="diagram-caption" x="300" y="348">1.1.2.0/24</text><text class="diagram-caption" x="475" y="348">1.1.1.0/24</text>
+          </g>
+          <g class="exercise-flow-arrows">
+            <path id="exercise-source-arrow" d="M57 298 V245"/>
+            <g data-diagram-drop="a"><path class="exercise-hit-area" d="M109 214 V181"/><path id="exercise-uplink-arrow-a" d="M109 214 V181"/></g>
+            <g data-diagram-drop="b"><path class="exercise-hit-area" d="M139 190 V155"/><path id="exercise-uplink-arrow-b" d="M139 190 V155"/></g>
+            <g data-diagram-drop="c"><path class="exercise-hit-area" d="M162 206 L194 176"/><path id="exercise-uplink-arrow-c" d="M162 206 L194 176"/></g>
+            <g data-diagram-drop="d"><path class="exercise-hit-area" d="M183 219 L220 202"/><path id="exercise-uplink-arrow-d" d="M183 219 L220 202"/></g>
+            <path id="exercise-shared-link" d="M164 78 L209 101"/>
+            <path id="exercise-downlink-arrow-1" d="M323 80 L354 110"/>
+            <path id="exercise-downlink-arrow-2" d="M494 80 V111"/>
+          </g>
+          <g class="exercise-link-labels">
+            <text id="exercise-source-count" x="52" y="266" text-anchor="end">12</text>
+            <text x="52" y="284" text-anchor="end">flows</text>
+            <text id="exercise-link-a" x="101" y="187" text-anchor="end">3</text>
+            <text id="exercise-link-b" x="147" y="160">3</text>
+            <text id="exercise-link-c" x="195" y="169">3</text>
+            <text id="exercise-link-d" x="226" y="205">3</text>
+            <text id="exercise-downlink-0" x="216" y="100">6</text>
+            <text id="exercise-downlink-1" x="362" y="108">3</text>
+            <text id="exercise-downlink-2" x="503" y="106">3</text>
+          </g>
+        </svg>
+        <figcaption>Topology from <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=2" target="_blank" rel="noopener">WCMP Figure 2(a)</a>. Dashed lines show physical links. Arrows show the direction and number of flows.</figcaption>
+        <dl class="exercise-metrics" aria-label="Current allocation">
+          <div><dt>Flows assigned</dt><dd id="exercise-assigned">12 / 12</dd></div>
+          <div><dt>Slowest flow</dt><dd id="exercise-rate">1.67 Gb/s</dd></div>
+        </dl>
+      </figure>
+      <section class="exercise-task" id="exercise-diagnosis" aria-labelledby="exercise-question">
+        <p class="eyebrow">Step 1 of 2</p>
+        <h3 id="exercise-question" tabindex="-1">Why do some flows get less bandwidth?</h3>
+        <form id="exercise-answer">
+          <fieldset>
+            <legend class="sr-only">Choose the explanation that fits the diagram</legend>
+            <label><input type="radio" name="cause" value="split" required> The flows are unevenly split across the four source uplinks.</label>
+            <label><input type="radio" name="cause" value="capacity"> Some physical links have less than 10 Gb/s of capacity.</label>
+            <label><input type="radio" name="cause" value="shared"> Flows from two uplinks share one link farther downstream.</label>
+          </fieldset>
+          <button class="button primary" type="submit">Check answer</button>
+        </form>
+        <p class="exercise-feedback" id="exercise-feedback" role="status" hidden></p>
+        <button class="button primary" id="exercise-continue" type="button" hidden>Redistribute the flows</button>
+      </section>
+      <section class="exercise-task" id="exercise-allocation" aria-labelledby="exercise-allocation-title" hidden>
+        <p class="eyebrow">Step 2 of 2</p>
+        <h3 id="exercise-allocation-title" tabindex="-1">Maximize the slowest flow’s rate</h3>
+        <p class="exercise-goal">Assign all 12 flows. Find a split that gives the slowest flow as much bandwidth as possible.</p>
+        <div class="exercise-feedback success exercise-complete" id="exercise-success" hidden>
+          <div role="status">
+            <h4>Success! Every flow gets 2.5 Gb/s.</h4>
+            <p>Each link into the destination carries four flows. Uplinks A and B share one downstream link, so their total matters. The paper illustrates WCMP’s 1:1:2:2 hashing weights with a split of 2, 2, 4, 4.</p>
+          </div>
+          <a class="button primary exercise-next" href="#weighted-hashing">Continue to weighted hashing</a>
+        </div>
+        <p>Drag flows from the bank onto an uplink arrow or card. You can also select a flow and then select a card. The arrows show how many flows each link carries.</p>
+        <div class="exercise-drop-zone exercise-bank" data-drop-zone="bank">
+          <button class="exercise-drop-label" type="button" data-place="bank">Flow bank <strong data-count>12</strong></button>
+          <div class="exercise-tokens" data-tokens></div>
+        </div>
+        <div class="exercise-uplinks" aria-label="Source uplinks">
+          <div class="exercise-drop-zone" data-drop-zone="a"><button class="exercise-drop-label" type="button" data-place="a">A · S2₀ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+          <div class="exercise-drop-zone" data-drop-zone="b"><button class="exercise-drop-label" type="button" data-place="b">B · S2₀ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+          <div class="exercise-drop-zone" data-drop-zone="c"><button class="exercise-drop-label" type="button" data-place="c">C · S2₁ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+          <div class="exercise-drop-zone" data-drop-zone="d"><button class="exercise-drop-label" type="button" data-place="d">D · S2₂ <strong data-count>0</strong></button><div class="exercise-tokens" data-tokens></div></div>
+        </div>
+        <p id="exercise-move-status" class="fine" aria-live="polite"></p>
+        <div class="exercise-actions">
+          <button class="button subtle" id="exercise-back" type="button">Back to diagnosis</button>
+          <button class="button subtle" id="exercise-reset" type="button">Return all flows to the bank</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+
+      <details class="reveal"><summary>פותחים אחרי התרגיל</summary><p>שני קישורי המקור שעוברים דרך אותו מתג עליון חולקים קישור אחד ליעד. ארבע זרימות בכל קישור יעד נותנות לכל זרימה קצב של 2.5 גיגה־ביט לשנייה בדוגמה.</p><p>חלוקה של 2, 2, 4, 4 ממחישה את יחס המשקלים במאמר. גם חלוקות אחרות שסכומן בשלושת קישורי היעד מתאים יכולות להשיג את אותה תוצאה בתרגיל הידני.</p></details>
+      <div class="read-block"><div class="read-head"><h2>קוראים יחד</h2><a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=3" target="_blank" rel="noopener">המאמר · עמוד 3 · סעיף 2.1</a></div><blockquote lang="en" dir="ltr">Note that the effective bandwidth capacity of the two uplinks to S2₀ at S1₀ is only 10 Gb/s, bottlenecked by the single downlink from S2₀ to S1₂.</blockquote></div>
+      <div class="discussion"><h2>למה מספר הקישורים המקומיים אינו מספיק לתכנון החלוקה?</h2></div>
+    </article>
+
+    <article class="stage" id="weighted-hashing" data-title="משקלים ומגבלות חומרה" data-minutes="10" hidden>
+      <p class="paper-label" lang="en" dir="ltr">WCMP · §3.1 · Figure 3 · PDF p. 4</p>
+      <h1>איך משקל הופך לבחירת יציאה?</h1>
+      <div class="read-block"><div class="read-head"><h2>קוראים יחד</h2><a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">המאמר · עמוד 4 · סעיף 3.1</a></div><blockquote lang="en" dir="ltr">To implement weighted hashing, we assign weights to each egress port in a multipath group. We refer to the array of egress ports with weights as the WCMP group. Each WCMP group distributes flows among a set of egress ports in proportion to the weight for each port. The weight assigned to an egress port is in turn proportional to the capacity of the path(s) associated with that egress port.</blockquote></div>
+      <section class="interactive-card" aria-labelledby="hash-title"><h2 id="hash-title">אותו עיקרון, טבלה מוגבלת</h2><p>בדוגמה החישובית הבאה משכפלים כניסות בהתאם למשקל. החליפו ייצוג ובדקו את מחיר הקטנת הטבלה.</p>
+        <div class="control-row"><label>ייצוג המשקלים <select id="weight-mode"><option value="full">יחס מלא — 2, 2, 3, 5</option><option value="reduced">קירוב — 1, 1, 2, 3</option><option value="small">קירוב קטן — 1, 1, 1, 2</option></select></label><label lang="en" dir="ltr">Hash <output id="hash-output">15</output><input type="range" id="hash-value" min="0" max="35" value="15"></label></div>
+        <div id="hash-buckets" class="hash-buckets" dir="ltr" aria-label="כניסות קבוצת הניתוב"></div>
+        <p id="hash-choice" class="equation" lang="en" dir="ltr" role="status"></p><div id="weight-metrics" class="metric-row"></div><div id="weight-shares" class="weight-shares"></div>
+        <p class="fine">מידת העומס היחסי כאן היא היחס המרבי בין חלק התעבורה שהקירוב שולח לפורט לבין חלקו ביחס המלא. זו דוגמה חישובית להמחשת העסקה.</p>
+      </section>
+      <div class="discussion"><h2>אם הקיבולות ידועות במדויק, למה שנבחר בכוונה משקלים מקורבים?</h2></div>
+      <details class="reveal"><summary>המחיר והיתרון</summary><p>שכפול כניסות צורך מקום בחומרה. קירוב המשקלים מאפשר להכניס יותר קבוצות לטבלאות מוגבלות, במחיר של סטייה מחלוקת התעבורה הרצויה.</p><p>המשקלים מגדירים הסתברויות. מספר קטן של זרימות עשוי לסטות מהיחס הרצוי גם כשהטבלה מדויקת.</p></details>
+      <details><summary>האיור המקורי וראיות מהניסוי</summary>
+        <figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-hashing.png" alt="WCMP Figure 3 showing hash lookup in a replicated egress-port table" loading="lazy"></button><figcaption>איור 3 · תהליך בחירת יציאה בחומרה. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure>
+        <figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-table-size.png" alt="WCMP Figure 11 comparing table entries before and after weight reduction" loading="lazy"></button><figcaption>איור 11 · מספר הכניסות בחומרה לפני הקטנת משקלים ואחריה. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=12" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure>
+        <figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-reduction.png" alt="WCMP Figure 12 showing bandwidth CDFs for ideal and reduced weights" loading="lazy"></button><figcaption>איור 12 · השפעת הקטנת המשקלים על ההוגנות. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=13" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure>
+        <p>בסעיף 7.4, עבור הטופולוגיה שנבדקה שם, סף עומס יתר של 1.05 הפחית בכ־70% את המספר המרבי של הכניסות עם פגיעה קטנה בהוגנות. הנתון מתייחס לניסוי המסוים הזה.</p>
+      </details>
+    </article>
+
+    <article class="stage" id="capacity-and-control" data-title="כשל בקישור ומידע אצל הבקר" data-minutes="10" hidden>
+      <p class="paper-label" lang="en" dir="ltr">WCMP · Case A · §5–6 · Figure 5 · PDF p. 9</p>
+      <h1>מי מגלה שהקיבולת השתנתה?</h1>
+      <div class="demo-slot" data-demo="a"></div>
+      <div class="discussion"><h2>בסימולציה המשקלים המעודכנים זמינים בתחילת הרצת הניסיון. מה צריך לקרות לפני כן ברשת אמיתית?</h2></div>
+      <div class="read-block"><div class="read-head"><h2>קוראים יחד</h2><a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=9" target="_blank" rel="noopener">המאמר · עמוד 9 · סעיף 5</a></div><blockquote lang="en" dir="ltr">WCMP relies on the underlying routing protocol to be notified of switch/link failures and change the weights based on the updates. As such, WCMP is limited by the reaction time of the underlying protocol to react to changes in the topology.</blockquote></div>
+      <div class="control-pipeline" dir="ltr"><div><strong>Switch updates</strong><span>Neighbors · healthy links</span></div><div><strong>NIB</strong><span>Topology graph</span></div><div><strong>Path Calculator</strong><span>Paths · weights</span></div><div><strong>Forwarding Manager</strong><span>Switch tables</span></div></div>
+      <div class="read-block"><div class="read-head"><h2>קוראים על מקור המידע</h2><a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=9" target="_blank" rel="noopener">המאמר · עמוד 9 · סעיף 6</a></div><blockquote lang="en" dir="ltr">This component discovers the network topology by subscribing to adjacency updates from switches. Switch updates include discovered neighbors and the list of healthy links connected to each neighbor.</blockquote><p class="source-caption" lang="en" dir="ltr">Network Information Base (NIB)</p></div>
+      <div class="discussion"><h2>איזה מידע יש לבקר על המשך הדרך, ומה הוא עדיין אינו יודע על העומס הרגעי?</h2></div>
+      <details class="reveal"><summary>הבחנה בין חישוב, עדכון והעברת חבילות</summary><p>הבקר מחשב ומתקין משקלים לפי תמונת הטופולוגיה. המתגים מבצעים את בחירת היציאה בזמן העברת החבילות.</p><p>פחות מ־10 מילישניות בסעיף 5 הוא זמן החישוב והקטנת המשקלים המדווח לאחר הודעה על עדכון. זמן זיהוי הכשל, הפצת המידע והתקנת העדכונים משפיעים גם הם על זמן התגובה הכולל.</p><figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-controller.png" alt="WCMP Figure 5 depicting the network controller, NIB, path calculator and forwarding manager" loading="lazy"></button><figcaption>איור 5 · ארכיטקטורת הבקר במימוש המאמר. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=9" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure></details>
+    </article>
+
+    <article class="stage" id="wcmp-evidence" data-title="מה התוצאות מלמדות" data-minutes="8" hidden>
+      <p class="paper-label" lang="en" dir="ltr">WCMP · §7.1 · Figure 7 · PDF p. 11</p>
+      <h1>איזו התפלגות רוחב פס נקבל?</h1>
+      <figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-fairness.png" alt="WCMP Figure 7 with ECMP and WCMP bandwidth CDFs across topologies and traffic patterns" loading="lazy"></button><figcaption>איור 7 · מתמקדים בגרפים א׳ וב׳ ומשווים את השפעת שינוי הטופולוגיה. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=11" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure>
+      <div class="figure-reading"><p><strong>הציר האופקי</strong> — רוחב הפס של זרימה.</p><p><strong>הציר האנכי</strong> — החלק היחסי של הזרימות שקיבלו רוחב פס כזה או פחות.</p><p><bdi>K</bdi> הוא מספר המתגים בשכבה העליונה, ו־<bdi>N</bdi> הוא מספר קישורי העלייה בכל מתג תחתון בדוגמה.</p></div>
+      <div class="discussion"><h2>מה נשאר דומה בין הטופולוגיות בגרף ב׳, ומה משתנה מאוד בגרף א׳? למי השינוי הזה מזיק?</h2></div>
+      <details class="reveal"><summary>מפרשים את העקומות</summary><p>בגרף ב׳ ההתפלגויות קרובות זו לזו ורוחב הפס בין הזרימות דומה למרות השינוי בטופולוגיה. בגרף א׳ השינוי בטופולוגיה משנה מאוד את ההתפלגות, וזרימות מסוימות מקבלות רוחב פס נמוך.</p><p>בפעולה שמחכה לכל ההעברות, הזרימות האיטיות יכולות לעכב את השלמת העבודה.</p></details>
+      <details><summary>עוד ראיות ושאלה על שילוב שיטות</summary><figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-real-traffic.png" alt="WCMP Figure 9 measuring standard deviation in flow completion time against flow size" loading="lazy"></button><figcaption>איור 9 · שונות בזמני ההשלמה בתעבורה מבוססת עקבות. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=11" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure><figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/wcmp-mptcp.png" alt="WCMP Figure 10 comparing TCP and MPTCP over ECMP and WCMP" loading="lazy"></button><figcaption>איור 10 · שילוב בין חלוקה משוקללת לבין כמה תתי־זרימות. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=12" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure><p>איור 9 מודד סטיית תקן בזמני השלמת זרימות כפונקציה של גודלן. איור 10 משווה ארבעה שילובי ניתוב ותעבורה, ובניסויים האלה השילוב המשוקלל עם תתי־זרימות משיג את התוצאות הטובות ביותר.</p><p>איזה מידע מאפשר לתת־הזרימות להגיב לעומס, מעבר למה שניתן ללמוד מהקיבולות?</p><p class="fine">איור 10 בוחן את MPTCP. שילוב עם FlowBender הוא כיוון שאפשר להציע לדיון ולבדיקה.</p></details>
+    </article>
+
+    <article class="stage" id="hash-collision" data-title="אותה קיבולת, עומס שונה" data-minutes="9" hidden>
+      <p class="paper-label" lang="en" dir="ltr">FlowBender · Case B · Introduction · PDF p. 1</p>
+      <h1>הקיבולות שוות.<br>למה מסלול אחד עמוס?</h1>
+      <div class="demo-slot" data-demo="b"></div>
+      <div class="discussion"><h2>אם נחשב שוב משקלים לפי הקיבולות, איזה מידע חדש נכנס להחלטה?</h2></div>
+      <div class="read-block"><div class="read-head"><h2>קוראים יחד</h2><a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=1" target="_blank" rel="noopener">המאמר · עמוד 1 · הקדמה</a></div><blockquote lang="en" dir="ltr">ECMP works well in balancing the aggregate load across all paths when there are a large number of flows with sufficient entropy across the headers. However, in reality, datacenter traffic is often heavy tailed with a small number of long flows contributing a significant fraction of all traffic [8]. These few long flows may not have enough entropy to uniformly distribute the load.</blockquote></div>
+      <div class="discussion"><h2>מה אפשר לשנות כשהשיבוץ הראשוני התברר כבעייתי, ומי במערכת יכול ליזום את השינוי?</h2></div>
+      <details><summary>קוראים על רמת הזרימה ורמת החבילה</summary><div class="read-block"><p class="paper-label" lang="en" dir="ltr">FlowBender · §3.1 · PDF pp. 3–4</p><blockquote lang="en" dir="ltr">FlowBender operates in between the extreme of statically sending a flow on one path (ECMP) and that of spreading its packets across multiple paths simultaneously (e.g. RPS, DeTail, and MPTCP).</blockquote></div><p>מתי בחירת מסלול ברמת כל חבילה תועיל, ואיזה מחיר היא יוצרת כשהמסלולים שונים בהשהיה? במנגנון המעבר לפי זרימה, רוב הזמן השיבוץ קבוע, והפרעה לסדר ההגעה יכולה להתרחש סביב המעבר.</p></details>
+      <details><summary>ממקמים חלופות לפי המאמר</summary><div class="table-wrap"><table><thead><tr><th>שיטה</th><th>הפעולה</th><th>מחיר שצריך לבחון</th></tr></thead><tbody><tr><td lang="en" dir="ltr">MPTCP</td><td>כמה תתי־זרימות לחיבור</td><td>מצב ועיבוד בקצוות</td></tr><tr><td lang="en" dir="ltr">RPS</td><td>בחירת יציאה אקראית לכל חבילה</td><td>הגעה מחוץ לסדר והתמודדות עם אי־סימטריה</td></tr><tr><td lang="en" dir="ltr">DeTail</td><td>בחירת יציאה לכל חבילה לפי מידע במתג</td><td>שינויי חומרה והתמודדות עם הגעה מחוץ לסדר במימוש הנבחן</td></tr><tr><td lang="en" dir="ltr">FlowBender</td><td>ניסיון שיבוץ חדש כשזרימה חווה גודש</td><td>השהיית המשוב ואפשרות לניסיון שלא מועיל</td></tr></tbody></table></div><p class="fine">ההשוואה מתייחסת למנגנונים ולמימושים שנדונים במאמר מ־2014.</p></details>
+    </article>
+
+    <article class="stage" id="feedback-and-rehash" data-title="מי מודד ומי מחליט" data-minutes="11" hidden>
+      <p class="paper-label" lang="en" dir="ltr">FlowBender · §3.3.1–3.3.2 · PDF p. 4</p>
+      <h1>המתג מסמן.<br>השולח מחליט לנסות שוב.</h1>
+      <div class="control-pipeline" dir="ltr"><div><strong>Switch</strong><span>Queue threshold · ECN</span></div><div><strong>Receiver</strong><span>Echo in ACK</span></div><div><strong>Sender</strong><span>Measure F · compare to T</span></div><div><strong>Switch hash</strong><span>New V · possible new path</span></div></div>
+      <div class="read-block"><div class="read-head"><h2>קוראים את מנגנון המדידה</h2><a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=4" target="_blank" rel="noopener">המאמר · עמוד 4 · סעיף 3.3.1</a></div><blockquote lang="en" dir="ltr">Our FlowBender approach is not strictly tied to one way of triggering and handling this feedback vs another, but we chose to demonstrate it using state of the art DCTCP-style marking, where a congested switch marks every packet exceeding a desired queue size threshold, and the TCP sender keeps track of the fraction of ECN-marked ACKs every RTT. If this fraction is larger than a certain threshold for any flow, this means that this flow is congested and should be rerouted as discussed next.</blockquote></div>
+      <div class="read-block"><div class="read-head"><h2>קוראים את סיכום המנגנון</h2><a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=4" target="_blank" rel="noopener">המאמר · עמוד 4 · פסקת To recap בסעיף 3.3.2</a></div><blockquote lang="en" dir="ltr">To recap, each TCP socket sender (i.e. flow) independently keeps track of its value V and the per-RTT fraction of marked ACKs F. Once F exceeds a set threshold T, the current path is considered to be potentially congested and the packets of the corresponding flow are rerouted by changing the value V of the flexible field.</blockquote></div>
+      <dl class="variables" dir="ltr"><div><dt>F</dt><dd>Fraction of marked ACKs</dd></div><div><dt>T</dt><dd>Congestion threshold</dd></div><div><dt>V</dt><dd>Flexible hash input</dd></div></dl>
+      <div class="demo-slot" data-demo="b"></div>
+      <div class="discussion"><h2>אחרי ששינינו את ערך הגיבוב, מה אנחנו יודעים על המסלול שייבחר? איך נגלה אם הניסיון עזר?</h2></div>
+      <details><summary>למה בוחרים באות מקצה לקצה?</summary><p class="english-label" lang="en" dir="ltr">ECN · PFC · FlowBender §3.2</p><p>השהיה מקומית של השכן יכולה להגיב מהר, אך עלולה להפיץ עצירה לאחור ברשת. סימון גודש שמוחזר באישור מביא לשולח מידע על מה שהזרימה חוותה לאורך הדרך, לאחר זמן המשוב.</p><p>מה היתרון בזמן התגובה של אות מקומי? איזה מידע על הזרימה יש בקצה, ומה עדיין חסר כדי לאתר את צוואר הבקבוק?</p><p>המנגנון מתאים במיוחד לזרימות שנמשכות כמה סבבי הלוך־ושוב, כך שנותר זמן להגיב למשוב.</p></details>
+      <details class="reveal"><summary>מה מובטח ומה נלמד בהמשך</summary><p>השולח משנה קלט לגיבוב. הגיבוב עשוי לבחור שוב באותו מסלול או לבחור מסלול עמוס אחר. מידע על תוצאת הניסיון מגיע במשוב מאוחר יותר.</p><p>סף אורך התור במתג קובע מתי לסמן חבילה. סף שיעור האישורים אצל השולח קובע מתי לנסות שינוי שיבוץ. אלה שני ספים שונים.</p><p>חבילות שכבר נשלחו ממשיכות בדרכן. שינוי המסלול עלול לגרום להגעה מחוץ לסדר סביב רגע המעבר.</p></details>
+    </article>
+
+    <article class="stage" id="timing" data-title="מתי מגיבים וכמה מחכים" data-minutes="9" hidden>
+      <p class="paper-label" lang="en" dir="ltr">FlowBender · §3.4–3.4.1 · Table 1 · PDF pp. 5–6</p>
+      <h1>מתי יש מספיק מידע כדי לפעול?</h1>
+      <div class="read-block"><div class="read-head"><h2>קוראים יחד</h2><a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=5" target="_blank" rel="noopener">המאמר · עמוד 5 · סעיף 3.4.1</a></div><blockquote lang="en" dir="ltr">If an argument is made for a specific scenario or application where very little packet reordering instances could be tolerated, FlowBender could be readjusted to reroute only after a flow is consistently congested (T is exceeded) for N consecutive RTTs.</blockquote></div>
+      <section class="interactive-card"><h2>עוקבים אחרי החלטת השולח</h2><p>בשני רצפים הסבב הראשון מדווח על 8% סימונים. בדקו מתי מתקבלת החלטה בכל רצף.</p><div class="control-row"><label lang="en" dir="ltr">T <select id="threshold"><option value="1">1%</option><option value="5" selected>5%</option><option value="10">10%</option><option value="20">20%</option></select></label><label lang="en" dir="ltr">N <select id="consecutive"><option value="1">1 RTT</option><option value="2" selected>2 RTTs</option><option value="4">4 RTTs</option></select></label><label>רצף המשוב <select id="feedback-sequence"><option value="burst">קפיצה חולפת — 8%, 0%, 0%, 0%</option><option value="persistent">גודש מתמשך — 8%, 8%, 8%, 8%</option></select></label></div><div id="rtt-rounds" class="rtt-rounds" dir="ltr"></div><div class="control-row"><button type="button" id="next-rtt">קבלת הסבב הבא</button><button type="button" id="reset-rtt" class="quiet-button">מהתחלה</button></div><p id="rtt-status" class="decision-status" role="status"></p><p class="fine">זהו מעקב אחרי תנאי ההחלטה בסעיף 3.4.1. כל ניסיון שינוי מאפס את המונה.</p></section>
+      <div class="discussion"><h2>מה נרוויח מהמתנה, ומה יהיה המחיר אם הגודש יימשך? מה יקרה אם כמה שולחים יפעלו יחד?</h2></div>
+      <details><summary>טבלה 1 — ממוצע וזמן הסיום של האחרונה</summary><p>זרימות בגודל 250 מגה־בייט מתחילות יחד. כל הזמנים בטבלה הם במילישניות.</p><div class="table-wrap"><table dir="ltr"><thead><tr><th>Flows</th><th>ECMP mean</th><th>ECMP max</th><th>FlowBender mean</th><th>FlowBender max</th></tr></thead><tbody><tr><td>8</td><td>588</td><td>1950</td><td>294</td><td>367</td></tr><tr><td>16</td><td>1468</td><td>5220</td><td>580</td><td>740</td></tr><tr><td>24</td><td>2515</td><td>9238</td><td>897</td><td>1144</td></tr></tbody></table></div><p>איזו עמודה מקבילה למדד שבו השתמשנו בסימולציה בבית?</p></details>
+      <details><summary>איורי הרגישות ודיון נוסף</summary><div class="two-up"><figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/flowbender-n.png" alt="FlowBender Figure 6 measuring sensitivity to the number of consecutive congested RTTs" loading="lazy"></button><figcaption>איור 6 · רגישות למספר הסבבים הרצופים. <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=8" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure><figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/flowbender-t.png" alt="FlowBender Figure 7 measuring sensitivity to the marked-ACK fraction threshold" loading="lazy"></button><figcaption>איור 7 · רגישות לסף שיעור הסימונים. <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=8" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure></div><p>כל גרף מנורמל לערך ברירת המחדל שלו. באיור 6 הבסיס הוא סבב אחד, ובאיור 7 הבסיס הוא סף של 5%. השיפורים והמחירים נמדדו בניסויים האלה.</p><p>סעיף 3.4.2 דן בפיזור זמני התגובה בין הזרימות כדי לצמצם מעברים מסונכרנים.</p></details>
+    </article>
+
+    <article class="stage" id="information-limits" data-title="מה המשוב אינו מספר" data-minutes="8" hidden>
+      <p class="paper-label" lang="en" dir="ltr">FlowBender · §4.2.5 & §5.5 · Figure 5 · PDF pp. 7–8, 10</p>
+      <h1>אותו סימון גודש.<br>האם אותה פעולה מתאימה?</h1>
+      <div class="discussion"><p class="block-label">דקה בזוגות</p><h2>בשני מצבים חוזרים 8% סימונים. באחד יש מסלול חלופי פנוי, ובשני כל המסלולים מגיעים לאותו קישור עמוס למקבל. איזה מידע נוסף הייתם מבקשים?</h2></div>
+      <details class="reveal"><summary>מציירים את שני המצבים</summary><div class="bottleneck-pair"><figure><svg viewBox="0 0 400 170" role="img" aria-label="Congestion on one of two core paths, with an uncongested alternative" dir="ltr"><path d="M35 85 H95 V35 H285 V85 H360 M95 85 V135 H285 V85" fill="none" stroke="#268578" stroke-width="5"/><circle cx="195" cy="35" r="14" fill="#b2463e"/><circle cx="35" cy="85" r="12" fill="#152f47"/><circle cx="360" cy="85" r="12" fill="#152f47"/><text x="195" y="17" text-anchor="middle">Core bottleneck</text></svg><figcaption>אפשר לנסות לעקוף את הקישור העמוס.</figcaption></figure><figure><svg viewBox="0 0 400 170" role="img" aria-label="Both core paths converge on one congested final link to the receiver" dir="ltr"><path d="M35 85 H95 V35 H285 V85 H360 M95 85 V135 H285 V85" fill="none" stroke="#268578" stroke-width="5"/><path d="M286 85 H349" stroke="#b2463e" stroke-width="9"/><circle cx="35" cy="85" r="12" fill="#152f47"/><circle cx="360" cy="85" r="12" fill="#152f47"/><text x="295" y="66" text-anchor="middle">Shared last hop</text></svg><figcaption>כל מסלול מגיע לאותו קישור אחרון.</figcaption></figure></div></details>
+      <div class="read-block"><div class="read-head"><h2>קוראים יחד</h2><a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=10" target="_blank" rel="noopener">המאמר · עמוד 10 · סעיף 5.5</a></div><blockquote lang="en" dir="ltr">For example, if congestion is occuring at the receiving ToR (e.g. an incast event), then it is unlikely that rerouting the individual congested responses will help (though rerouting still did not have a noticeable negative impact on the overall performance per our simulation results). Alternatively, if a flow is mainly bottlenecked at a core switch while other core switches are lightly loaded, then slowing down the rate of this flow would be rather harmful when it could have been rerouted instead.</blockquote></div>
+      <figure class="paper-figure"><button type="button" class="figure-zoom" aria-label="הגדלת האיור"><img src="assets/lesson/flowbender-fanin.png" alt="FlowBender Figure 5 with average job completion time normalized to ECMP across fan-in degrees" loading="lazy"></button><figcaption>איור 5 · זמן השלמת עבודה כתלות במספר העובדים שעונים יחד. <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=8" target="_blank" rel="noopener">למקור במאמר</a></figcaption></figure>
+      <div class="figure-reading"><p>כל עבודה מחלקת מגה־בייט אחד בין העובדים, שעונים במקביל. מודדים את זמן ההשלמה של העבודה לפי התשובה האחרונה.</p><p>הנרמול הוא לזמן הממוצע של בסיס ההשוואה בכל מספר עובדים. הגדלת מספר העובדים גם מקטינה את גודל כל תשובה.</p></div>
+      <div class="discussion"><h2>איזה ניסוי נוסף יבדוק אם הירידה ביתרון נובעת מצוואר הבקבוק ליד המקבל?</h2></div>
+      <details class="reveal"><summary>כיוון לבדיקה</summary><p>אפשר לקבע את מספר העובדים ואת נפח העבודה, לשנות את קיבולת הקישור האחרון ולמדוד את התור בו ואת זמני ההשלמה המוחלטים בשתי השיטות. כך בוחנים את הסבר המחברים תוך שליטה בחלק מהמשתנים.</p></details>
+    </article>
+
+    <article class="stage" id="synthesis" data-title="איפה פותרים ועל סמך מה" data-minutes="5" hidden>
+      <p class="paper-label" lang="en" dir="ltr">End hosts · Switches · Control plane</p>
+      <h1>איזו החלטה שייכת לכל רכיב?</h1>
+      <div class="discussion"><h2>בחרו בעיה אחת מהשיעור. מי צריך להחליט, איזה מידע מצדיק את הפעולה ומה עדיין אינו ידוע לו?</h2></div>
+      <details class="reveal"><summary>משלימים את טבלת ההשוואה יחד</summary><div class="table-wrap"><table><thead><tr><th>רכיב</th><th>מידע זמין במנגנון</th><th>פעולה</th><th>מגבלה</th></tr></thead><tbody><tr><th>בקר הניתוב המשוקלל</th><td>טופולוגיה, קישורים תקינים וקיבולות</td><td>חישוב והתקנת משקלים</td><td>העדכונים מגיעים בהשהיה, והטופולוגיה לבדה אינה מתארת עומס רגעי</td></tr><tr><th>מתג</th><td>קישורים ותורים מקומיים</td><td>העברה לפי הטבלאות וסימון גודש</td><td>המידע המקומי נותן תמונה חלקית של המשך הדרך</td></tr><tr><th>שולח מנגנון הגיבוב מחדש</th><td>משוב גודש עבור הזרימה</td><td>שינוי קלט לגיבוב וניסיון שיבוץ חדש</td><td>המשוב לבדו אינו מזהה את מצב החלופות או את מיקום הגודש</td></tr></tbody></table></div><p>שתי הגישות מפצלות תפקידים בין רכיבים. גם כשהשולח מחליט על ניסיון מעבר, המתגים משתתפים במדידה ובהעברה.</p><p>איור 10 במאמר המשקלים מדגים השלמה בין מידע מבני לבין תגובת תעבורה דינמית בניסויים עם MPTCP. כדי להסיק על שילוב עם FlowBender צריך לבחון אותו בניסוי מתאים.</p></details>
+      <label class="exit-label" for="exit-note">תובנה או שאלה להמשך</label><textarea id="exit-note" rows="3" placeholder="הייתי נותן את ההחלטה ל… כי הוא יודע… ועדיין חסר לו…"></textarea><p class="fine" id="note-status">התשובה נשמרת בדפדפן הזה לשימושכם.</p>
+      <details><summary>הקשר להמשך הדרך</summary><p class="english-label" lang="en" dir="ltr">FlowBender → PLB</p><p>במאמר מ־2022, חוקרי גוגל מתארים מנגנון שמבוסס על FlowBender ומשתמש בשדה ייעודי בכותרת כדי להשפיע על הגיבוב. שאלת עיתוי המעבר נשארת מרכזית. <a href="https://networks.cs.northwestern.edu/CS497-s24/papers/sigcomm22-plb-google.pdf" target="_blank" rel="noopener">למאמר ההמשך</a></p><p class="english-label" lang="en" dir="ltr">Capacity information → Weighted ECMP</p><p>הפצת מידע על קיבולת ושימוש בו למשקלים מופיעים גם בתיעוד של מערכות ניתוב. <a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-linux-511/Layer-3/Routing/BGP-Weighted-Equal-Cost-Multipath/" target="_blank" rel="noopener">לדוגמה בתיעוד NVIDIA</a></p></details>
+    </article>
+
+    <footer class="lesson-footer"><div class="footer-nav"><button type="button" id="previous-stage">השלב הקודם</button><span id="stage-time"></span><button type="button" id="next-stage" class="primary">השלב הבא</button></div><details class="sources"><summary>המאמרים ומקורות האיורים</summary><p lang="en" dir="ltr">Junlan Zhou et al. 2014. WCMP: Weighted Cost Multipathing for Improved Fairness in Data Centers. EuroSys ’14. DOI 10.1145/2592798.2592803. <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf" target="_blank" rel="noopener">Original paper</a>.</p><p lang="en" dir="ltr">Abdul Kabbani, Balajee Vamanan, Jahangir Hasan, and Fabien Duchene. 2014. FlowBender: Flow-level Adaptive Routing for Improved Latency and Throughput in Datacenter Networks. CoNEXT ’14, pp. 149–160. DOI 10.1145/2674005.2674985. <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf" target="_blank" rel="noopener">Original paper</a>.</p><p>האיורים חתוכים מהמאמרים. טבלה 1 הועתקה כנתונים לצורך הקריאה המשותפת. ההדגמות הן מודל לימודי משותף לפעילות ההכנה ולשיעור.</p><details class="source-details"><summary>Citation and permissions</summary><p>Junlan Zhou, Malveeka Tewari, Min Zhu, Abdul Kabbani, Leon Poutievski, Arjun Singh, and Amin Vahdat. 2014. WCMP: Weighted Cost Multipathing for Improved Fairness in Data Centers. Proceedings of the Ninth European Conference on Computer Systems (EuroSys ’14), Article 5, 14 pages. DOI: 10.1145/2592798.2592803.</p><p>Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org. Copyright © 2014 ACM.</p></details><details class="source-details"><summary>Citation and permissions</summary><p>Abdul Kabbani, Balajee Vamanan, Jahangir Hasan, and Fabien Duchene. 2014. FlowBender: Flow-level Adaptive Routing for Improved Latency and Throughput in Datacenter Networks. Proceedings of the 10th ACM International Conference on Emerging Networking Experiments and Technologies (CoNEXT ’14), 149–160. DOI: 10.1145/2674005.2674985.</p><p>Permission to make digital or hard copies of part or all of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage, and that copies bear this notice and the full citation on the first page. Copyrights for third-party components of this work must be honored. For all other uses, contact the owner/author(s). Copyright is held by the author/owner(s).</p></details></details></footer>
+  </main>
+</div>
+<dialog id="figure-dialog"><div class="control-row"><button type="button" id="close-figure">סגירה</button><button type="button" id="figure-actual-size" aria-pressed="false">גודל מקורי</button></div><div class="figure-scroll"><img id="enlarged-figure" alt=""></div><p id="enlarged-caption"></p></dialog>
+<button id="rp-reset-activity" type="button" hidden>Reset exercise</button>
+</body>
+</html>
