@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A routing lab comparing ECMP, WCMP, and FlowBender across two network scenarios.">
   <title>Routing Lab | Class Preparation</title>
-  <link rel="stylesheet" href="lab.css?v=4">
+  <link rel="stylesheet" href="lab.css?v=5">
   <link rel="stylesheet" href="exercise.css">
   <script defer src="routing-model.js?v=1"></script>
   <script defer src="lab.js?v=5"></script>
@@ -33,16 +33,17 @@
 
   <section class="reading-guide" id="reading" aria-labelledby="reading-tab" hidden>
     <h2 id="reading-title">Read before you run <span class="reading-time">(18 min)</span></h2>
-    <p>Read the short excerpts in order. Then complete the WCMP Exercise before starting the simulation. PDF page numbers start at the first page of the file. Count lines from the start of the specified paragraph.</p>
+    <p>Read the excerpts below in order. Then complete the WCMP Exercise before starting the simulation. Each excerpt includes a link to the original PDF.</p>
     <div class="reading-papers">
       <details class="reading-paper" data-reading-paper="wcmp">
         <summary>WCMP <span class="reading-time">(9 min)</span></summary>
-        <div class="reading-content">
+        <div class="reading-content"><details class="source-details"><summary>Citation and permissions</summary><p>Junlan Zhou, Malveeka Tewari, Min Zhu, Abdul Kabbani, Leon Poutievski, Arjun Singh, and Amin Vahdat. 2014. WCMP: Weighted Cost Multipathing for Improved Fairness in Data Centers. Proceedings of the Ninth European Conference on Computer Systems (EuroSys ’14), Article 5, 14 pages. DOI: 10.1145/2592798.2592803.</p><p>Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org. Copyright © 2014 ACM.</p></details>
           <ol class="reading-excerpts">
             <li><details class="reading-section">
               <summary>The problem <span class="reading-time">(4 min)</span></summary>
               <div class="reading-content">
                 <p>PDF page 1, Abstract. Read both paragraphs in full: lines 1–12 of paragraph 1 and lines 1–11 of paragraph 2.</p>
+                <img class="excerpt-image" src="assets/reading/wcmp-abstract.png" width="789" height="828" loading="lazy" decoding="async" alt="WCMP abstract, both paragraphs. Use the original PDF link below for selectable text.">
                 <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=1" target="_blank" rel="noopener">Open WCMP, PDF page 1</a>
                 <div><label class="reading-check"><input type="checkbox" data-read-item="wcmp-problem" aria-label="Mark the WCMP problem section as read"> Read</label></div>
               </div>
@@ -51,6 +52,7 @@
               <summary>Why bandwidth fairness matters <span class="reading-time">(2 min)</span></summary>
               <div class="reading-content">
                 <p>PDF page 3, Section 2.2, paragraph 1, lines 1–7. Read the first two sentences, starting at “Data center applications such as Web search” and stopping after “the speed of the slowest transfer.”</p>
+                <img class="excerpt-image" src="assets/reading/wcmp-bandwidth-fairness.png" width="742" height="266" loading="lazy" decoding="async" alt="WCMP Section 2.2, first paragraph, first two sentences, lines 1 through 7. Use the original PDF link below for selectable text.">
                 <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=3" target="_blank" rel="noopener">Open WCMP, PDF page 3</a>
                 <div><label class="reading-check"><input type="checkbox" data-read-item="wcmp-fairness" aria-label="Mark the WCMP bandwidth fairness section as read"> Read</label></div>
               </div>
@@ -59,6 +61,7 @@
               <summary>The proposed solution <span class="reading-time">(3 min)</span></summary>
               <div class="reading-content">
                 <p>PDF page 4, Section 3.1, paragraph 2, lines 1–7. Start at “To implement weighted hashing” and stop after “associated with that egress port.”</p>
+                <img class="excerpt-image" src="assets/reading/wcmp-weighted-hashing.png" width="768" height="252" loading="lazy" decoding="async" alt="WCMP Section 3.1, second paragraph, lines 1 through 7. Use the original PDF link below for selectable text.">
                 <a href="https://cse.hkust.edu.hk/~kaichen/courses/spring2015/comp6611/papers/wcmp-eurosys14.pdf#page=4" target="_blank" rel="noopener">Open WCMP, PDF page 4</a>
                 <div><label class="reading-check"><input type="checkbox" data-read-item="wcmp-solution" aria-label="Mark the WCMP solution section as read"> Read</label></div>
               </div>
@@ -69,12 +72,13 @@
       </details>
       <details class="reading-paper" data-reading-paper="flowbender">
         <summary>FlowBender <span class="reading-time">(9 min)</span></summary>
-        <div class="reading-content">
+        <div class="reading-content"><details class="source-details"><summary>Citation and permissions</summary><p>Abdul Kabbani, Balajee Vamanan, Jahangir Hasan, and Fabien Duchene. 2014. FlowBender: Flow-level Adaptive Routing for Improved Latency and Throughput in Datacenter Networks. Proceedings of the 10th ACM International Conference on Emerging Networking Experiments and Technologies (CoNEXT ’14), 149–160. DOI: 10.1145/2674005.2674985.</p><p>Permission to make digital or hard copies of part or all of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage, and that copies bear this notice and the full citation on the first page. Copyrights for third-party components of this work must be honored. For all other uses, contact the owner/author(s). Copyright is held by the author/owner(s).</p></details>
           <ol class="reading-excerpts">
             <li><details class="reading-section">
               <summary>The problem <span class="reading-time">(2 min)</span></summary>
               <div class="reading-content">
                 <p>PDF page 1, Abstract, paragraph 1, lines 1–8. Start at “Datacenter networks provide” and stop after “degrading performance of other flows as well.”</p>
+                <img class="excerpt-image" src="assets/reading/flowbender-abstract.png" width="768" height="252" loading="lazy" decoding="async" alt="FlowBender abstract, first paragraph, lines 1 through 8. Use the original PDF link below for selectable text.">
                 <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=1" target="_blank" rel="noopener">Open FlowBender, PDF page 1</a>
                 <div><label class="reading-check"><input type="checkbox" data-read-item="flowbender-problem" aria-label="Mark the FlowBender problem section as read"> Read</label></div>
               </div>
@@ -83,6 +87,7 @@
               <summary>Two ways to compare approaches <span class="reading-time">(2 min)</span></summary>
               <div class="reading-content">
                 <p>PDF page 2, Introduction, paragraph 3 (the first on this page), lines 1–5. Start at “The solution space for load balancing” and stop after “in a given flow.”</p>
+                <img class="excerpt-image" src="assets/reading/flowbender-comparison.png" width="768" height="159" loading="lazy" decoding="async" alt="FlowBender introduction, third paragraph, first sentence. Use the original PDF link below for selectable text.">
                 <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a>
                 <div><label class="reading-check"><input type="checkbox" data-read-item="flowbender-comparison" aria-label="Mark the FlowBender comparison section as read"> Read</label></div>
               </div>
@@ -91,6 +96,7 @@
               <summary>The proposed solution <span class="reading-time">(4 min)</span></summary>
               <div class="reading-content">
                 <p>PDF page 2, Introduction, paragraph 4 (the second on this page), lines 1–18. Start at “We propose FlowBender” and stop after “obviating the need to make hardware changes to switches.”</p>
+                <img class="excerpt-image" src="assets/reading/flowbender-proposal.png" width="742" height="582" loading="lazy" decoding="async" alt="FlowBender introduction, fourth paragraph, lines 1 through 18, including the motivation for an end-to-end design. Use the original PDF link below for selectable text.">
                 <a href="https://conferences2.sigcomm.org/co-next/2014/CoNEXT_papers/p149.pdf#page=2" target="_blank" rel="noopener">Open FlowBender, PDF page 2</a>
                 <div><label class="reading-check"><input type="checkbox" data-read-item="flowbender-solution-extended" aria-label="Mark the FlowBender solution section as read"> Read</label></div>
               </div>

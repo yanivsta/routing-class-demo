@@ -76,6 +76,9 @@ h1 { font-size: clamp(2.45rem, 5.5vw, 4.25rem); line-height: 1.03; letter-spacin
 .reading-excerpts li + li { margin-block-start: .9rem; }
 .reading-excerpts p { margin-block: .18rem .25rem; }
 .reading-excerpts a { font-weight: 700; font-size: .9rem; }
+.excerpt-image { display: block; width: min(100%, 720px); height: auto; margin-block: .5rem; border: 1px solid var(--line); border-radius: 5px; }
+.source-details { margin-block: .5rem; color: var(--muted-ink); font-size: .83rem; }
+.source-details p { margin-block-start: .35rem; }
 .reading-section > summary { padding-block: .4rem; }
 .reading-check { display: inline-flex; align-items: center; gap: .35rem; min-height: 36px; margin-block-start: .5rem; padding-inline: .45rem; border: 1px solid var(--line); border-radius: 7px; background: #f4f8f6; cursor: pointer; font-size: .85rem; }
 .reading-check input { accent-color: var(--accent); margin: 0; }
